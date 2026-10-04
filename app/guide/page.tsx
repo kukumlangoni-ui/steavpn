@@ -81,6 +81,47 @@ const STEPS: Record<DeviceId, { title: string; steps: string[] }> = {
   },
 };
 
+function StepScreenshot({ deviceId, stepIndex }: { deviceId: string; stepIndex: number }) {
+  const [error, setError] = useState(false);
+  const src = `/guides/${deviceId}/step-${stepIndex + 1}.png`;
+
+  if (error) {
+    return (
+      <div
+        style={{
+          marginTop: "0.75rem",
+          padding: "1.5rem",
+          textAlign: "center",
+          background: "var(--surface-2)",
+          borderRadius: 8,
+          border: "1px dashed var(--border)",
+        }}
+      >
+        <p className="muted" style={{ fontSize: "0.85rem", margin: 0 }}>
+          Screenshot coming soon
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginTop: "0.75rem" }}>
+      <img
+        src={src}
+        alt={`Step ${stepIndex + 1} screenshot`}
+        onError={() => setError(true)}
+        style={{
+          width: "100%",
+          maxWidth: 480,
+          borderRadius: 8,
+          border: "1px solid var(--border)",
+          display: "block",
+        }}
+      />
+    </div>
+  );
+}
+
 export default function GuidePage() {
   const [activeDevice, setActiveDevice] = useState<DeviceId>("ios");
   const device = DEVICES.find((d) => d.id === activeDevice)!;
@@ -208,15 +249,18 @@ export default function GuidePage() {
               >
                 {i + 1}
               </div>
-              <p style={{ margin: 0, fontSize: "0.95rem", lineHeight: 1.6, paddingTop: 2 }}>
-                {step}
-              </p>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ margin: 0, fontSize: "0.95rem", lineHeight: 1.6, paddingTop: 2 }}>
+                  {step}
+                </p>
+                <StepScreenshot deviceId={activeDevice} stepIndex={i} />
+              </div>
             </li>
           ))}
         </ol>
       </div>
 
-      {/* Screenshot note */}
+      {/* Help note */}
       <div
         style={{
           marginTop: "2rem",
@@ -228,7 +272,7 @@ export default function GuidePage() {
         }}
       >
         <p className="muted" style={{ fontSize: "0.85rem", margin: 0 }}>
-          Screenshots coming soon. Need help?{" "}
+          Need help?{" "}
           <a href="/support" style={{ color: "var(--accent-1)" }}>Contact support</a>
         </p>
       </div>
