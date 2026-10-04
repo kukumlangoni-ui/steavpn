@@ -93,6 +93,49 @@ export default {
       return json({ ok: true, service: 'steavpn-api', time: new Date().toISOString() }, 200, cors(origin));
     }
 
+    // Public subscription check by phone
+    if (url.pathname === '/api/check' && request.method === 'POST') {
+      const body = await request.json().catch(() => null) as { phone?: string } | null;
+      const phone = body?.phone?.trim();
+      if (!phone) {
+        return json({ error: 'Phone number required' }, 400, cors(origin));
+      }
+
+      const customer = await env.DB
+        .prepare("SELECT id, name FROM customers WHERE phone = ? AND status = 'active' LIMIT 1")
+        .bind(phone)
+        .first<{ id: number; name: string }>();
+
+      if (!customer) {
+        return json({ found: false }, 200, cors(origin));
+      }
+
+      const subscription = await env.DB
+        .prepare(`
+          SELECT plan_name, expiry_date, payment_status
+          FROM subscriptions
+          WHERE customer_id = ?
+          ORDER BY expiry_date DESC
+          LIMIT 1
+        `)
+        .bind(customer.id)
+        .first<{ plan_name: string | null; expiry_date: string | null; payment_status: string }>();
+
+      if (!subscription) {
+        return json({ found: true, customer: { name: customer.name }, subscription: null }, 200, cors(origin));
+      }
+
+      return json({
+        found: true,
+        customer: { name: customer.name },
+        subscription: {
+          plan_name: subscription.plan_name,
+          expiry_date: subscription.expiry_date,
+          status: subscription.payment_status,
+        },
+      }, 200, cors(origin));
+    }
+
     // ─── Admin auth endpoints ───────────────────────────────────────────
 
     if (url.pathname === '/api/admin/login' && request.method === 'POST') {

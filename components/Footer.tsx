@@ -31,6 +31,11 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href="/check" className="muted" style={{ fontSize: "0.9rem" }}>
+                  Check subscription
+                </Link>
+              </li>
             </ul>
           </div>
 
