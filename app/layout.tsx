@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 import { SITE } from "@/lib/config";
 
 const inter = localFont({
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
+  manifest: "/manifest.webmanifest",
 };
 
 export const viewport: Viewport = {
@@ -39,6 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body>
+        <ServiceWorkerRegistrar />
         <Header />
         <main style={{ minHeight: "70vh" }}>{children}</main>
         <Footer />
