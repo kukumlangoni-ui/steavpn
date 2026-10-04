@@ -1,8 +1,9 @@
-import type { D1Database, KVNamespace } from '@cloudflare/workers-types';
+import type { D1Database, KVNamespace, R2Bucket } from '@cloudflare/workers-types';
 
 export interface Env {
   DB: D1Database;
   SESSIONS: KVNamespace;
+  GUIDE_IMAGES: R2Bucket;
   ADMIN_ORIGIN: string;
 }
 
@@ -503,6 +504,209 @@ export default {
         `)
         .all();
       return json({ ok: true, subscriptions: results }, 200, cors(origin));
+    }
+
+    // ─── Guide: public endpoints ────────────────────────────────────────
+
+    if (url.pathname === '/api/guide' && request.method === 'GET') {
+      const devices = await env.DB
+        .prepare('SELECT * FROM guide_devices WHERE published = 1 ORDER BY sort_order, id')
+        .all<{ id: number; slug: string; name: string; app_name: string; download_label: string; download_url: string; intro: string | null }>();
+
+      const result = [];
+      for (const device of devices.results) {
+        const steps = await env.DB
+          .prepare('SELECT id, step_number, title, body, image_key, image_alt FROM guide_steps WHERE device_id = ? ORDER BY step_number')
+          .bind(device.id)
+          .all<{ id: number; step_number: number; title: string; body: string | null; image_key: string | null; image_alt: string | null }>();
+
+        result.push({
+          id: device.id,
+          slug: device.slug,
+          name: device.name,
+          app_name: device.app_name,
+          download_label: device.download_label,
+          download_url: device.download_url,
+          intro: device.intro,
+          steps: steps.results.map((s) => ({
+            step_number: s.step_number,
+            title: s.title,
+            body: s.body,
+            image_url: s.image_key ? `/api/guide/images/${device.slug}/${s.image_key.split('/').pop()}` : null,
+            image_alt: s.image_alt,
+          })),
+        });
+      }
+
+      return json({ devices: result }, 200, cors(origin));
+    }
+
+    // Serve guide images from R2
+    const imageMatch = url.pathname.match(/^\/api\/guide\/images\/([^/]+)\/(.+)$/);
+    if (imageMatch && request.method === 'GET') {
+      const slug = imageMatch[1];
+      const filename = imageMatch[2];
+      const key = `${slug}/${filename}`;
+      const obj = await env.GUIDE_IMAGES.get(key);
+      if (!obj) return new Response('Not found', { status: 404, headers: cors(origin) });
+
+      const headers = new Headers();
+      headers.set('Content-Type', obj.httpMetadata?.contentType || 'image/png');
+      headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+      Object.entries(cors(origin)).forEach(([k, v]) => headers.set(k, v));
+      return new Response(obj.body as unknown as BodyInit, { status: 200, headers });
+    }
+
+    // ─── Guide: admin endpoints ────────────────────────────────────────
+
+    if (url.pathname === '/api/admin/guide/devices' && request.method === 'POST') {
+      const body = await request.json().catch(() => null) as Record<string, unknown> | null;
+      if (!body) return json({ error: 'Invalid body' }, 400, cors(origin));
+
+      if (body.id) {
+        await env.DB
+          .prepare(`UPDATE guide_devices SET
+            slug = ?, name = ?, app_name = ?, download_label = ?, download_url = ?,
+            intro = ?, sort_order = ?, published = ?, updated_at = datetime('now')
+            WHERE id = ?`)
+          .bind(
+            body.slug, body.name, body.app_name, body.download_label, body.download_url,
+            body.intro ?? null, body.sort_order ?? 0, body.published ?? 1,
+            body.id
+          )
+          .run();
+        const device = await env.DB.prepare('SELECT * FROM guide_devices WHERE id = ?').bind(body.id).first();
+        return json({ ok: true, device }, 200, cors(origin));
+      } else {
+        const result = await env.DB
+          .prepare(`INSERT INTO guide_devices
+            (slug, name, app_name, download_label, download_url, intro, sort_order, published)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+          .bind(
+            body.slug, body.name, body.app_name, body.download_label, body.download_url,
+            body.intro ?? null, body.sort_order ?? 0, body.published ?? 1
+          )
+          .run();
+        const device = await env.DB.prepare('SELECT * FROM guide_devices WHERE id = ?').bind(result.meta.last_row_id).first();
+        return json({ ok: true, device }, 201, cors(origin));
+      }
+    }
+
+    if (url.pathname === '/api/admin/guide/steps' && request.method === 'POST') {
+      const body = await request.json().catch(() => null) as Record<string, unknown> | null;
+      if (!body?.device_id || !body?.title) {
+        return json({ error: 'device_id and title required' }, 400, cors(origin));
+      }
+
+      if (body.id) {
+        await env.DB
+          .prepare(`UPDATE guide_steps SET
+            step_number = ?, title = ?, body = ?, image_alt = ?, updated_at = datetime('now')
+            WHERE id = ?`)
+          .bind(body.step_number ?? 1, body.title, body.body ?? null, body.image_alt ?? null, body.id)
+          .run();
+        const step = await env.DB.prepare('SELECT * FROM guide_steps WHERE id = ?').bind(body.id).first();
+        return json({ ok: true, step }, 200, cors(origin));
+      } else {
+        const result = await env.DB
+          .prepare(`INSERT INTO guide_steps
+            (device_id, step_number, title, body, image_alt)
+            VALUES (?, ?, ?, ?, ?)`)
+          .bind(body.device_id, body.step_number ?? 1, body.title, body.body ?? null, body.image_alt ?? null)
+          .run();
+        const step = await env.DB.prepare('SELECT * FROM guide_steps WHERE id = ?').bind(result.meta.last_row_id).first();
+        return json({ ok: true, step }, 201, cors(origin));
+      }
+    }
+
+    const stepDeleteMatch = url.pathname.match(/^\/api\/admin\/guide\/steps\/(\d+)$/);
+    if (stepDeleteMatch && request.method === 'DELETE') {
+      const id = parseInt(stepDeleteMatch[1], 10);
+      const step = await env.DB.prepare('SELECT image_key FROM guide_steps WHERE id = ?').bind(id).first<{ image_key: string | null }>();
+      if (step?.image_key) {
+        await env.GUIDE_IMAGES.delete(step.image_key);
+      }
+      await env.DB.prepare('DELETE FROM guide_steps WHERE id = ?').bind(id).run();
+      return json({ ok: true }, 200, cors(origin));
+    }
+
+    if (url.pathname === '/api/admin/guide/upload' && request.method === 'POST') {
+      const formData = await request.formData();
+      const slug = formData.get('slug') as string | null;
+      const file = formData.get('file') as File | null;
+      const stepIdStr = formData.get('step_id') as string | null;
+
+      if (!slug || !file || !stepIdStr) {
+        return json({ error: 'slug, file, and step_id are required' }, 400, cors(origin));
+      }
+
+      const stepId = parseInt(stepIdStr, 10);
+
+      // Validate file type and size
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        return json({ error: 'Only PNG, JPEG, and WebP images are allowed' }, 400, cors(origin));
+      }
+
+      const maxSize = 5 * 1024 * 1024; // 5 MB
+      if (file.size > maxSize) {
+        return json({ error: 'Image must be under 5 MB' }, 400, cors(origin));
+      }
+
+      // Get step info to determine step_number
+      const step = await env.DB
+        .prepare('SELECT step_number, device_id FROM guide_steps WHERE id = ?')
+        .bind(stepId)
+        .first<{ step_number: number; device_id: number }>();
+      if (!step) return json({ error: 'Step not found' }, 404, cors(origin));
+
+      const ext = file.type === 'image/png' ? 'png' : file.type === 'image/jpeg' ? 'jpg' : 'webp';
+      const key = `${slug}/step-${step.step_number}.${ext}`;
+
+      // Delete old image if present
+      const oldStep = await env.DB
+        .prepare('SELECT image_key FROM guide_steps WHERE id = ?')
+        .bind(stepId)
+        .first<{ image_key: string | null }>();
+      if (oldStep?.image_key && oldStep.image_key !== key) {
+        await env.GUIDE_IMAGES.delete(oldStep.image_key);
+      }
+
+      // Upload to R2
+      const arrayBuffer = await file.arrayBuffer();
+      await env.GUIDE_IMAGES.put(key, arrayBuffer, {
+        httpMetadata: { contentType: file.type },
+      });
+
+      // Update step
+      await env.DB
+        .prepare("UPDATE guide_steps SET image_key = ?, updated_at = datetime('now') WHERE id = ?")
+        .bind(key, stepId)
+        .run();
+
+      const updatedStep = await env.DB.prepare('SELECT * FROM guide_steps WHERE id = ?').bind(stepId).first();
+
+      return json({
+        ok: true,
+        url: `/api/guide/images/${slug}/step-${step.step_number}.${ext}`,
+        step: updatedStep,
+      }, 200, cors(origin));
+    }
+
+    if (url.pathname === '/api/admin/guide/reorder' && request.method === 'POST') {
+      const body = await request.json().catch(() => null) as { device_id?: number; order?: number[] } | null;
+      if (!body?.device_id || !Array.isArray(body.order)) {
+        return json({ error: 'device_id and order array required' }, 400, cors(origin));
+      }
+
+      const stmt = env.DB.prepare(
+        "UPDATE guide_steps SET step_number = ?, updated_at = datetime('now') WHERE id = ?"
+      );
+      for (let i = 0; i < body.order.length; i++) {
+        await stmt.bind(i + 1, body.order[i]).run();
+      }
+
+      return json({ ok: true }, 200, cors(origin));
     }
 
     return json({ error: 'Not found' }, 404, cors(origin));

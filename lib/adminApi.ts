@@ -54,4 +54,32 @@ export const adminApi = {
   // Auth
   logout: () =>
     request<{ ok: boolean }>('/api/admin/logout', { method: 'POST' }),
+
+  // Guide
+  getGuide: () => request<{ devices: any[] }>('/api/guide'),
+  saveDevice: (data: Record<string, unknown>) =>
+    request<{ ok: boolean; device: any }>('/api/admin/guide/devices', { method: 'POST', body: JSON.stringify(data) }),
+  saveStep: (data: Record<string, unknown>) =>
+    request<{ ok: boolean; step: any }>('/api/admin/guide/steps', { method: 'POST', body: JSON.stringify(data) }),
+  deleteStep: (id: number) =>
+    request<{ ok: boolean }>(`/api/admin/guide/steps/${id}`, { method: 'DELETE' }),
+  uploadStepImage: async (slug: string, stepId: number, file: File) => {
+    const formData = new FormData();
+    formData.append('slug', slug);
+    formData.append('step_id', String(stepId));
+    formData.append('file', file);
+    const res = await fetch(`${SITE.apiBase}/api/admin/guide/upload`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    return data as { ok: boolean; url: string; step: any };
+  },
+  reorderSteps: (deviceId: number, order: number[]) =>
+    request<{ ok: boolean }>('/api/admin/guide/reorder', {
+      method: 'POST',
+      body: JSON.stringify({ device_id: deviceId, order }),
+    }),
 };

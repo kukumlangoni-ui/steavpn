@@ -12,6 +12,10 @@ database_id = "2d07880c-69a4-4fe6-9ebe-aa10f99d6916"
 binding = "SESSIONS"
 id = "f2b766679933419485c7ccd33d012233"
 
+[[r2_buckets]]
+binding = "GUIDE_IMAGES"
+bucket_name = "steavpn-guide"
+
 [vars]
 ADMIN_ORIGIN = "https://steavpn.stea.africa"
 

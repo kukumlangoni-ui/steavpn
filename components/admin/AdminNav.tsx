@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { label: 'Customers', href: '/admin/customers' },
   { label: 'Links', href: '/admin/links' },
   { label: 'Subscriptions', href: '/admin/subscriptions' },
+  { label: 'Guide', href: '/admin/guide' },
 ];
 
 export default function AdminNav() {
