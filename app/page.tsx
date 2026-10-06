@@ -1,45 +1,76 @@
+import Image from "next/image";
 import Link from "next/link";
-import { SITE } from "@/lib/config";
+import HeroVisual from "@/components/HeroVisual";
 
-export default function Home() {
+const BRANDS = [
+  { name: "Netflix",      src: "/brands/netflix.svg" },
+  { name: "Disney+",      src: "/brands/disneyplus.svg" },
+  { name: "Hulu",         src: "/brands/hulu.svg" },
+  { name: "Max",          src: "/brands/max.svg" },
+  { name: "Prime Video",  src: "/brands/primevideo.svg" },
+  { name: "TikTok",       src: "/brands/tiktok.svg" },
+  { name: "ChatGPT",      src: "/brands/chatgpt.svg" },
+];
+
+const STEPS = [
+  {
+    n: "01",
+    title: "Choose a plan",
+    body: "Pick 1 month, 3 months, or 1 year. Pay ¥10, ¥28, or ¥100.",
+  },
+  {
+    n: "02",
+    title: "Pay via WeChat or bank",
+    body: "Send payment through WeChat, Alipay, or the Tanzanian bank account shown on the pay page.",
+  },
+  {
+    n: "03",
+    title: "Receive your link and connect",
+    body: "We send your private subscription link. Open the app on your device and paste it. You're connected.",
+  },
+];
+
+export default function HomePage() {
   return (
-    <>
-      {/* Hero */}
-      <section style={{ padding: "6rem 0 5rem" }}>
-        <div className="container" style={{ textAlign: "center", maxWidth: 760 }}>
+    <div className="container">
+      {/* HERO */}
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 0.9fr)",
+          gap: "3rem",
+          alignItems: "center",
+          padding: "5rem 0 4rem",
+        }}
+        className="hero-grid"
+      >
+        {/* LEFT: copy */}
+        <div>
           <h1
             style={{
-              fontSize: "clamp(2.25rem, 5vw, 3.75rem)",
+              fontSize: "clamp(2.5rem, 5vw, 4rem)",
               fontWeight: 800,
-              lineHeight: 1.1,
               letterSpacing: "-0.03em",
+              lineHeight: 1.05,
               marginBottom: "1.25rem",
             }}
           >
-            Your <span className="gradient-text">private VPN</span> — set up in minutes
+            Your <span className="accent">private VPN</span> — set up in minutes
           </h1>
           <p
             className="muted"
             style={{
-              fontSize: "clamp(1rem, 2vw, 1.15rem)",
-              lineHeight: 1.7,
-              marginBottom: "2.5rem",
-              maxWidth: 560,
-              marginLeft: "auto",
-              marginRight: "auto",
+              fontSize: "1.1rem",
+              lineHeight: 1.6,
+              marginBottom: "2rem",
+              maxWidth: 520,
             }}
           >
-            Buy a plan, pay via WeChat or bank, receive your link and connect
-            on any device.
+            Buy a plan, pay via WeChat or bank, receive your link and
+            connect on any device.
           </p>
-          <div
-            style={{
-              display: "flex",
-              gap: "0.875rem",
-              justifyContent: "center",
-              flexWrap: "wrap",
-            }}
-          >
+
+          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "3rem" }}>
             <Link href="/pricing" className="btn-primary">
               Choose a plan
             </Link>
@@ -47,150 +78,174 @@ export default function Home() {
               How to set up
             </Link>
           </div>
-        </div>
-      </section>
 
-      {/* How it works */}
-      <section style={{ padding: "4rem 0" }}>
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-            <h2
-              style={{
-                fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)",
-                fontWeight: 700,
-                letterSpacing: "-0.02em",
-                marginBottom: "0.75rem",
-              }}
-            >
-              How it works
-            </h2>
-            <p className="muted" style={{ fontSize: "1.05rem" }}>
-              Three simple steps to get connected
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: "1.5rem",
-              maxWidth: 960,
-              margin: "0 auto",
-            }}
-          >
-            {[
-              {
-                step: "01",
-                title: "Choose a plan",
-                desc: "Pick the plan that fits your needs — 1 month, 3 months, or 1 year.",
-              },
-              {
-                step: "02",
-                title: "Pay via WeChat, Alipay, or bank",
-                desc: "Send payment through your preferred method and take a screenshot.",
-              },
-              {
-                step: "03",
-                title: "Receive your private link and connect",
-                desc: "We send your link within 30 minutes. Paste it in your app and connect.",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="card"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.75rem",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    lineHeight: 1,
-                  }}
-                  className="gradient-text"
-                >
-                  {item.step}
-                </div>
-                <h3
-                  style={{
-                    fontSize: "1.15rem",
-                    fontWeight: 600,
-                    margin: 0,
-                  }}
-                >
-                  {item.title}
-                </h3>
-                <p
-                  className="muted"
-                  style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: 0 }}
-                >
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Trust strip */}
-      <section style={{ padding: "3rem 0" }}>
-        <div className="container">
-          <div
-            style={{
-              borderTop: "1px solid var(--border)",
-              borderBottom: "1px solid var(--border)",
-              padding: "2rem 0",
-              textAlign: "center",
-            }}
-          >
+          {/* Works with row */}
+          <div>
             <p
               className="muted"
               style={{
-                fontSize: "0.95rem",
-                fontWeight: 500,
-                letterSpacing: "0.05em",
+                fontSize: "0.85rem",
+                letterSpacing: "0.08em",
                 textTransform: "uppercase",
-                margin: 0,
+                marginBottom: "0.9rem",
               }}
             >
-              Works on{" "}
-              <span style={{ color: "var(--text)" }}>iPhone</span> ·{" "}
-              <span style={{ color: "var(--text)" }}>Android</span> ·{" "}
-              <span style={{ color: "var(--text)" }}>Windows</span> ·{" "}
-              <span style={{ color: "var(--text)" }}>Mac</span> ·{" "}
-              <span style={{ color: "var(--text)" }}>Linux</span>
+              Works with
             </p>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "1rem 1.75rem",
+                alignItems: "center",
+              }}
+            >
+              {BRANDS.map((b) => (
+                <div
+                  key={b.name}
+                  className="brand-logo"
+                  style={{
+                    height: 22,
+                    width: "auto",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                  title={b.name}
+                >
+                  <Image
+                    src={b.src}
+                    alt={b.name}
+                    width={70}
+                    height={22}
+                    style={{ height: 22, width: "auto", filter: "brightness(0) invert(1)" }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
+
+        {/* RIGHT: rotating card stack */}
+        <div
+          style={{
+            position: "relative",
+            aspectRatio: "1 / 1",
+            maxWidth: 520,
+            marginLeft: "auto",
+            marginRight: "auto",
+            width: "100%",
+          }}
+          className="hero-visual"
+        >
+          <HeroVisual />
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{ padding: "5rem 0 6rem" }}>
-        <div className="container" style={{ textAlign: "center", maxWidth: 600 }}>
-          <h2
-            style={{
-              fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)",
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-              marginBottom: "0.75rem",
-            }}
-          >
-            Ready to connect?
-          </h2>
-          <p
-            className="muted"
-            style={{ fontSize: "1.05rem", marginBottom: "2rem", lineHeight: 1.6 }}
-          >
-            {SITE.tagline}. Plans start at just ¥10.
-          </p>
-          <Link href="/pricing" className="btn-primary">
-            Choose a plan
-          </Link>
+      {/* HOW IT WORKS */}
+      <section style={{ padding: "4rem 0 5rem" }}>
+        <h2
+          style={{
+            fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            textAlign: "center",
+            marginBottom: "0.75rem",
+          }}
+        >
+          How it works
+        </h2>
+        <p
+          className="muted"
+          style={{
+            textAlign: "center",
+            fontSize: "1rem",
+            marginBottom: "3rem",
+          }}
+        >
+          Three simple steps to get connected
+        </p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: "1.25rem",
+          }}
+        >
+          {STEPS.map((s) => (
+            <div key={s.n} className="card">
+              <div
+                style={{
+                  fontSize: "2rem",
+                  fontWeight: 800,
+                  color: "var(--accent-1)",
+                  marginBottom: "1rem",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {s.n}
+              </div>
+              <h3
+                style={{
+                  fontSize: "1.15rem",
+                  fontWeight: 700,
+                  marginBottom: "0.5rem",
+                }}
+              >
+                {s.title}
+              </h3>
+              <p
+                className="muted"
+                style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: 0 }}
+              >
+                {s.body}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
-    </>
+
+      {/* BOTTOM CTA */}
+      <section
+        style={{
+          padding: "3rem 0 5rem",
+          textAlign: "center",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: "clamp(1.5rem, 2.5vw, 2rem)",
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            marginBottom: "1.5rem",
+          }}
+        >
+          Ready to connect?
+        </h2>
+        <Link href="/pricing" className="btn-primary">
+          Choose a plan
+        </Link>
+      </section>
+
+      {/* Responsive: stack hero columns on mobile */}
+      <style>{`
+        .brand-logo {
+          opacity: 0.55;
+          transition: opacity 0.2s;
+        }
+        .brand-logo:hover {
+          opacity: 1;
+        }
+        @media (max-width: 820px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            padding-top: 3rem !important;
+          }
+          .hero-visual {
+            max-width: 360px !important;
+          }
+        }
+      `}</style>
+    </div>
   );
 }
