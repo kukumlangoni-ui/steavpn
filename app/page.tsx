@@ -35,20 +35,6 @@ export default function HomePage() {
             <Link href="/pricing" className="btn-primary">Choose a plan</Link>
             <Link href="/guide" className="btn-secondary">How to set up</Link>
           </div>
-
-          <div className="brands">
-            <p className="brands-label">WORKS WITH</p>
-            <div className="brands-image-wrap">
-              <Image
-                src="/hero/social.png"
-                alt="Supported services"
-                width={800}
-                height={200}
-                priority
-                style={{ width: "100%", height: "auto", objectFit: "contain" }}
-              />
-            </div>
-          </div>
         </div>
 
         <div className="hero-right">
@@ -61,6 +47,20 @@ export default function HomePage() {
               style={{ objectFit: "contain" }}
             />
           </div>
+        </div>
+      </section>
+
+      <section className="brands-section">
+        <p className="brands-label">WORKS WITH</p>
+        <div className="brands-image-wrap">
+          <Image
+            src="/hero/social.png"
+            alt="Supported services"
+            width={1600}
+            height={300}
+            priority
+            style={{ width: "100%", height: "auto", objectFit: "contain" }}
+          />
         </div>
       </section>
 
@@ -134,8 +134,8 @@ export default function HomePage() {
           grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
           gap: 4rem;
           align-items: center;
-          padding: 7rem 0 6rem;
-          min-height: 640px;
+          padding: 5rem 0 3rem;
+          min-height: 600px;
         }
 
         /* LEFT COLUMN */
@@ -166,7 +166,7 @@ export default function HomePage() {
           display: flex;
           gap: 1rem;
           flex-wrap: wrap;
-          margin-bottom: 3.5rem;
+          margin-bottom: 0;
         }
 
         .hero-ctas .btn-primary,
@@ -175,7 +175,12 @@ export default function HomePage() {
           font-size: 1rem;
         }
 
-        /* BRANDS */
+        /* BRANDS — FULL WIDTH */
+        .brands-section {
+          padding: 0 0 4rem 0;
+          margin-top: -2rem;
+        }
+
         .brands-label {
           font-size: 0.8rem;
           letter-spacing: 0.14em;
@@ -184,9 +189,11 @@ export default function HomePage() {
           margin: 0 0 1.25rem 0;
           font-weight: 600;
         }
+
         .brands-image-wrap {
-          max-width: 560px;
+          max-width: 100%;
           width: 100%;
+          opacity: 0.95;
         }
 
         /* RIGHT COLUMN — EARTH */
@@ -194,12 +201,14 @@ export default function HomePage() {
           display: flex;
           justify-content: center;
           align-items: center;
+          width: 100%;
+          height: 100%;
         }
 
         .earth-wrap {
           position: relative;
           width: 100%;
-          max-width: 560px;
+          max-width: 100%;
           aspect-ratio: 1 / 1;
         }
 
@@ -219,7 +228,7 @@ export default function HomePage() {
           .hero {
             grid-template-columns: 1fr;
             gap: 3rem;
-            padding: 4rem 0 3rem;
+            padding: 4rem 0 2rem;
             min-height: auto;
           }
           .hero-title {
@@ -234,8 +243,9 @@ export default function HomePage() {
             max-width: 340px;
             margin: 1rem auto 0;
           }
-          .brands-image-wrap {
-            max-width: 100%;
+          .brands-section {
+            margin-top: 0;
+            padding: 0 0 3rem 0;
           }
         }
 
