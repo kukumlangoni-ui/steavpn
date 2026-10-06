@@ -1,15 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import HeroVisual from "@/components/HeroVisual";
 
 const BRANDS = [
-  { name: "Netflix",      src: "/brands/netflix.svg" },
-  { name: "Disney+",      src: "/brands/disneyplus.svg" },
-  { name: "Hulu",         src: "/brands/hulu.svg" },
-  { name: "Max",          src: "/brands/max.svg" },
-  { name: "Prime Video",  src: "/brands/primevideo.svg" },
-  { name: "TikTok",       src: "/brands/tiktok.svg" },
-  { name: "ChatGPT",      src: "/brands/chatgpt.svg" },
+  { name: "Netflix",     src: "/brands/netflix.svg" },
+  { name: "Disney+",     src: "/brands/disneyplus.svg" },
+  { name: "Hulu",        src: "/brands/hulu.svg" },
+  { name: "Max",         src: "/brands/max.svg" },
+  { name: "Prime Video", src: "/brands/primevideo.svg" },
+  { name: "TikTok",      src: "/brands/tiktok.svg" },
+  { name: "ChatGPT",     src: "/brands/chatgpt.svg" },
 ];
 
 const STEPS = [
@@ -33,91 +32,30 @@ const STEPS = [
 export default function HomePage() {
   return (
     <div className="container">
-      {/* HERO */}
-      <section
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 0.9fr)",
-          gap: "3rem",
-          alignItems: "center",
-          padding: "5rem 0 4rem",
-        }}
-        className="hero-grid"
-      >
-        {/* LEFT: copy */}
-        <div>
-          <h1
-            style={{
-              fontSize: "clamp(2.5rem, 5vw, 4rem)",
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
-              lineHeight: 1.05,
-              marginBottom: "1.25rem",
-            }}
-          >
+      <section className="hero">
+        <div className="hero-left">
+          <h1 className="hero-title">
             Your <span className="accent">private VPN</span> — set up in minutes
           </h1>
-          <p
-            className="muted"
-            style={{
-              fontSize: "1.1rem",
-              lineHeight: 1.6,
-              marginBottom: "2rem",
-              maxWidth: 520,
-            }}
-          >
-            Buy a plan, pay via WeChat or bank, receive your link and
-            connect on any device.
+          <p className="hero-sub">
+            Buy a plan, pay via WeChat or bank, receive your link and connect on any device.
           </p>
-
-          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "3rem" }}>
-            <Link href="/pricing" className="btn-primary">
-              Choose a plan
-            </Link>
-            <Link href="/guide" className="btn-secondary">
-              How to set up
-            </Link>
+          <div className="hero-ctas">
+            <Link href="/pricing" className="btn-primary">Choose a plan</Link>
+            <Link href="/guide" className="btn-secondary">How to set up</Link>
           </div>
 
-          {/* Works with row */}
-          <div>
-            <p
-              className="muted"
-              style={{
-                fontSize: "0.85rem",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                marginBottom: "0.9rem",
-              }}
-            >
-              Works with
-            </p>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "1rem 1.75rem",
-                alignItems: "center",
-              }}
-            >
+          <div className="brands">
+            <p className="brands-label">WORKS WITH</p>
+            <div className="brands-row">
               {BRANDS.map((b) => (
-                <div
-                  key={b.name}
-                  className="brand-logo"
-                  style={{
-                    height: 22,
-                    width: "auto",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                  title={b.name}
-                >
+                <div key={b.name} className="brand-item" title={b.name}>
                   <Image
                     src={b.src}
                     alt={b.name}
-                    width={70}
-                    height={22}
-                    style={{ height: 22, width: "auto", filter: "brightness(0) invert(1)" }}
+                    width={90}
+                    height={28}
+                    style={{ height: 28, width: "auto" }}
                   />
                 </div>
               ))}
@@ -125,23 +63,19 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* RIGHT: rotating card stack */}
-        <div
-          style={{
-            position: "relative",
-            aspectRatio: "1 / 1",
-            maxWidth: 520,
-            marginLeft: "auto",
-            marginRight: "auto",
-            width: "100%",
-          }}
-          className="hero-visual"
-        >
-          <HeroVisual />
+        <div className="hero-right">
+          <div className="earth-wrap">
+            <Image
+              src="/hero/earth.png"
+              alt="Global network"
+              fill
+              priority
+              style={{ objectFit: "contain" }}
+            />
+          </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
       <section style={{ padding: "4rem 0 5rem" }}>
         <h2
           style={{
@@ -156,15 +90,10 @@ export default function HomePage() {
         </h2>
         <p
           className="muted"
-          style={{
-            textAlign: "center",
-            fontSize: "1rem",
-            marginBottom: "3rem",
-          }}
+          style={{ textAlign: "center", fontSize: "1rem", marginBottom: "3rem" }}
         >
           Three simple steps to get connected
         </p>
-
         <div
           style={{
             display: "grid",
@@ -185,19 +114,10 @@ export default function HomePage() {
               >
                 {s.n}
               </div>
-              <h3
-                style={{
-                  fontSize: "1.15rem",
-                  fontWeight: 700,
-                  marginBottom: "0.5rem",
-                }}
-              >
+              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem" }}>
                 {s.title}
               </h3>
-              <p
-                className="muted"
-                style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: 0 }}
-              >
+              <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: 0 }}>
                 {s.body}
               </p>
             </div>
@@ -205,13 +125,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* BOTTOM CTA */}
-      <section
-        style={{
-          padding: "3rem 0 5rem",
-          textAlign: "center",
-        }}
-      >
+      <section style={{ padding: "3rem 0 5rem", textAlign: "center" }}>
         <h2
           style={{
             fontSize: "clamp(1.5rem, 2.5vw, 2rem)",
@@ -222,27 +136,98 @@ export default function HomePage() {
         >
           Ready to connect?
         </h2>
-        <Link href="/pricing" className="btn-primary">
-          Choose a plan
-        </Link>
+        <Link href="/pricing" className="btn-primary">Choose a plan</Link>
       </section>
 
-      {/* Responsive: stack hero columns on mobile */}
       <style>{`
-        .brand-logo {
-          opacity: 0.55;
+        .hero {
+          display: grid;
+          grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+          gap: 3rem;
+          align-items: center;
+          padding: 5rem 0 4rem;
+        }
+        .hero-title {
+          font-size: clamp(2.5rem, 5vw, 4rem);
+          font-weight: 800;
+          letter-spacing: -0.03em;
+          line-height: 1.05;
+          margin: 0 0 1.25rem 0;
+        }
+        .hero-sub {
+          font-size: 1.1rem;
+          line-height: 1.6;
+          margin: 0 0 2rem 0;
+          max-width: 520px;
+          color: var(--text-muted, #a1a1aa);
+        }
+        .hero-ctas {
+          display: flex;
+          gap: 0.75rem;
+          flex-wrap: wrap;
+          margin-bottom: 3rem;
+        }
+        .brands-label {
+          font-size: 0.8rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--text-muted, #a1a1aa);
+          margin: 0 0 1rem 0;
+        }
+        .brands-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1.5rem 2rem;
+          align-items: center;
+        }
+        .brand-item {
+          display: flex;
+          align-items: center;
+          opacity: 0.85;
           transition: opacity 0.2s;
         }
-        .brand-logo:hover {
+        .brand-item:hover {
           opacity: 1;
         }
+        .hero-right {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .earth-wrap {
+          position: relative;
+          width: 100%;
+          max-width: 480px;
+          aspect-ratio: 1 / 1;
+        }
+        .earth-wrap::before {
+          content: "";
+          position: absolute;
+          inset: 5%;
+          border-radius: 50%;
+          background: radial-gradient(circle,
+            rgba(245,158,11,0.18) 0%,
+            rgba(245,158,11,0) 70%);
+          pointer-events: none;
+        }
+        .earth-wrap img {
+          animation: earth-spin 60s linear infinite;
+        }
+        @keyframes earth-spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .earth-wrap img { animation: none; }
+        }
         @media (max-width: 820px) {
-          .hero-grid {
-            grid-template-columns: 1fr !important;
-            padding-top: 3rem !important;
+          .hero {
+            grid-template-columns: 1fr;
+            padding: 3rem 0 2rem;
           }
-          .hero-visual {
-            max-width: 360px !important;
+          .earth-wrap {
+            max-width: 320px;
+            margin: 2rem auto 0;
           }
         }
       `}</style>
