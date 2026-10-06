@@ -25,12 +25,11 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-left">
           <h1 className="hero-title">
-            The VPN that works
-            <br />
-            <span className="accent">everywhere. every device.</span>
+            VPN <span className="accent">without borders.</span>
           </h1>
+
           <p className="hero-sub">
-            One private link, set up in minutes.
+            Works in every country. On every device. One link, set up in minutes.
           </p>
           <div className="hero-ctas">
             <Link href="/pricing" className="btn-primary">Choose a plan</Link>
@@ -146,21 +145,21 @@ export default function HomePage() {
         }
 
         .hero-title {
-          font-size: clamp(1.75rem, 4vw, 3.25rem);
+          font-size: clamp(3rem, 6vw, 5rem);
           font-weight: 800;
-          letter-spacing: -0.015em;
-          line-height: 1.12;
-          margin: 0 0 1.75rem 0;
-          max-width: 720px;
-          text-transform: uppercase;
+          letter-spacing: -0.04em;
+          line-height: 1.02;
+          margin: 0 0 1.5rem 0;
+          max-width: 620px;
+          text-transform: none;
         }
 
         .hero-sub {
-          font-size: clamp(1.05rem, 1.35vw, 1.3rem);
-          line-height: 1.6;
+          font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+          line-height: 1.55;
           color: var(--text-muted, #a1a1aa);
           margin: 0 0 2.5rem 0;
-          max-width: 560px;
+          max-width: 480px;
         }
 
         .hero-ctas {
@@ -224,7 +223,12 @@ export default function HomePage() {
             min-height: auto;
           }
           .hero-title {
-            font-size: clamp(2rem, 8vw, 3rem);
+            font-size: clamp(2.25rem, 9vw, 3.5rem);
+            letter-spacing: -0.035em;
+            max-width: 100%;
+          }
+          .hero-sub {
+            max-width: 100%;
           }
           .earth-wrap {
             max-width: 340px;
