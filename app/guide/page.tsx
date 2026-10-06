@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SITE } from "@/lib/config";
+import { SITE, CONTACT } from "@/lib/config";
 
 interface Step {
   step_number: number;
@@ -22,33 +22,109 @@ interface Device {
   steps: Step[];
 }
 
+function DeviceIcon({ slug, appName }: { slug: string; appName: string }) {
+  const [error, setError] = useState(false);
+  const initial = appName.charAt(0).toUpperCase();
+
+  if (error) {
+    return (
+      <div className="device-icon" style={{ color: "var(--text-muted)", fontWeight: 700, fontSize: "1.5rem" }}>
+        {initial}
+      </div>
+    );
+  }
+
+  return (
+    <div className="device-icon">
+      <img
+        src={`/clients/${slug}.png`}
+        alt={`${appName} icon`}
+        onError={() => setError(true)}
+      />
+    </div>
+  );
+}
+
+function CopyRow({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div className="copy-row">
+      <label>Can&apos;t open on this device? Copy the link:</label>
+      <code>{url}</code>
+      <button
+        onClick={handleCopy}
+        style={{
+          padding: "0.4rem 0.9rem",
+          borderRadius: 6,
+          background: "var(--surface-2)",
+          border: "1px solid var(--border-active)",
+          color: "var(--text-muted)",
+          fontSize: "0.8rem",
+          fontWeight: 500,
+          cursor: "pointer",
+          transition: "all 0.15s",
+          flexShrink: 0,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = "var(--accent-1)";
+          e.currentTarget.style.color = "var(--accent-1)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = "var(--border-active)";
+          e.currentTarget.style.color = "var(--text-muted)";
+        }}
+      >
+        {copied ? "✓ Copied" : "Copy"}
+      </button>
+    </div>
+  );
+}
+
 function StepSkeleton() {
   return (
     <div
       style={{
-        display: "flex",
-        gap: "1rem",
-        padding: "1rem",
+        position: "relative",
+        padding: "1.25rem 1.25rem 1.25rem 3.75rem",
         background: "var(--surface)",
         border: "1px solid var(--border)",
-        borderRadius: 10,
+        borderRadius: 12,
+        marginBottom: "1rem",
       }}
     >
       <div
         style={{
-          width: 28,
-          height: 28,
+          position: "absolute",
+          left: "1rem",
+          top: "1.25rem",
+          width: 32,
+          height: 32,
           borderRadius: "50%",
           background: "var(--surface-2)",
-          flexShrink: 0,
           animation: "pulse 1.5s ease-in-out infinite",
         }}
       />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <div
           style={{
             height: 16,
-            width: "60%",
+            width: "40%",
             background: "var(--surface-2)",
             borderRadius: 4,
             animation: "pulse 1.5s ease-in-out infinite",
@@ -62,6 +138,16 @@ function StepSkeleton() {
             borderRadius: 4,
             animation: "pulse 1.5s ease-in-out infinite",
             animationDelay: "0.1s",
+          }}
+        />
+        <div
+          style={{
+            height: 12,
+            width: "70%",
+            background: "var(--surface-2)",
+            borderRadius: 4,
+            animation: "pulse 1.5s ease-in-out infinite",
+            animationDelay: "0.2s",
           }}
         />
       </div>
@@ -92,51 +178,204 @@ export default function GuidePage() {
   const activeDevice = devices.find((d) => d.slug === activeSlug) || null;
 
   return (
-    <div className="container" style={{ padding: "4rem 1.25rem 6rem", maxWidth: 860 }}>
+    <div className="guide-wrap">
       <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 0.8; }
         }
+
+        .guide-wrap { max-width: 900px; margin: 0 auto; padding: 4rem 1.25rem 6rem; }
+
+        .guide-header { margin-bottom: 1rem; }
+        .guide-header h1 {
+          font-size: 2.25rem;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          margin: 0 0 0.75rem;
+        }
+        .guide-header p {
+          font-size: 1.05rem;
+          line-height: 1.6;
+          color: var(--text-muted, #a1a1aa);
+          margin: 0;
+        }
+
+        .device-tabs {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+          margin: 2rem 0 2.5rem;
+        }
+        .device-tab {
+          padding: 0.6rem 1.1rem;
+          border-radius: 999px;
+          border: 1px solid var(--border, #1f1f1f);
+          background: transparent;
+          color: var(--text-muted, #a1a1aa);
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+        .device-tab.active {
+          background: linear-gradient(135deg, #f59e0b, #e88a1e);
+          color: #0a0a0a;
+          border-color: transparent;
+          font-weight: 600;
+        }
+
+        .device-card {
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+          padding: 1.5rem;
+          background: var(--surface, #111);
+          border: 1px solid var(--border, #1f1f1f);
+          border-radius: 14px;
+          margin-bottom: 1rem;
+        }
+        .device-icon {
+          width: 72px;
+          height: 72px;
+          border-radius: 16px;
+          overflow: hidden;
+          flex-shrink: 0;
+          background: #1a1a1a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .device-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .device-info { flex: 1; min-width: 0; }
+        .device-app { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.25rem; }
+        .device-name { color: var(--text-muted, #a1a1aa); font-size: 0.9rem; margin: 0; }
+
+        .copy-row {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.9rem 1rem;
+          background: rgba(255,255,255,0.02);
+          border: 1px solid var(--border, #1f1f1f);
+          border-radius: 10px;
+          margin-bottom: 1.5rem;
+        }
+        .copy-row label {
+          font-size: 0.85rem;
+          color: var(--text-muted, #a1a1aa);
+          flex-shrink: 0;
+        }
+        .copy-row code {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: 0.85rem;
+          font-family: ui-monospace, Menlo, monospace;
+        }
+
+        .prereq {
+          padding: 1.25rem 1.5rem;
+          background: rgba(245,158,11,0.08);
+          border: 1px solid rgba(245,158,11,0.3);
+          border-radius: 12px;
+          margin-bottom: 2rem;
+        }
+        .prereq p { margin: 0 0 0.5rem; line-height: 1.55; }
+        .prereq p:last-child { margin-bottom: 0; }
+        .prereq strong { color: #f59e0b; }
+
+        .steps-title {
+          font-size: 1.35rem;
+          font-weight: 700;
+          margin: 2.5rem 0 1.25rem;
+          letter-spacing: -0.01em;
+        }
+
+        .step-card {
+          position: relative;
+          padding: 1.5rem 1.5rem 1.5rem 4.5rem;
+          background: var(--surface, #111);
+          border: 1px solid var(--border, #1f1f1f);
+          border-left: 3px solid #f59e0b;
+          border-radius: 12px;
+          margin-bottom: 1rem;
+        }
+        .step-num {
+          position: absolute;
+          left: 1.25rem;
+          top: 1.5rem;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #f59e0b, #e88a1e);
+          color: #0a0a0a;
+          font-weight: 800;
+          font-size: 1.05rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .step-title { font-size: 1.05rem; font-weight: 700; margin: 0 0 0.5rem; }
+        .step-body {
+          color: var(--text-muted, #a1a1aa);
+          line-height: 1.6;
+          margin: 0;
+          font-size: 0.95rem;
+        }
+        .step-img {
+          width: 100%;
+          border-radius: 10px;
+          margin-top: 1rem;
+          border: 1px solid var(--border, #1f1f1f);
+        }
+
+        .done-card {
+          margin-top: 3rem;
+          padding: 2rem;
+          background: rgba(86,194,138,0.06);
+          border: 1px solid rgba(86,194,138,0.25);
+          border-radius: 14px;
+          text-align: center;
+        }
+        .done-card h3 { margin: 0 0 0.75rem; font-size: 1.15rem; }
+        .done-card p {
+          color: var(--text-muted, #a1a1aa);
+          margin: 0 0 1.5rem;
+          line-height: 1.55;
+        }
+        .done-ctas {
+          display: flex;
+          gap: 0.75rem;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        @media (max-width: 640px) {
+          .guide-wrap { padding: 2.5rem 1rem 4rem; }
+          .device-card { flex-wrap: wrap; }
+          .device-icon { width: 56px; height: 56px; border-radius: 12px; }
+          .device-app { font-size: 1.1rem; }
+          .step-card { padding: 1.25rem 1.25rem 1.25rem 3.75rem; }
+          .step-num { width: 32px; height: 32px; font-size: 0.9rem; left: 1rem; top: 1.25rem; }
+          .copy-row { flex-wrap: wrap; }
+          .copy-row code { width: 100%; }
+        }
       `}</style>
 
-      <div style={{ marginBottom: "2.5rem" }}>
-        <h1 style={{ fontSize: "2.25rem", fontWeight: 700, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
-          Setup Guide
-        </h1>
-        <p className="muted" style={{ fontSize: "1.05rem", lineHeight: 1.6, margin: 0 }}>
-          Pick your device. Follow the steps. Connect in minutes.
-        </p>
+      <div className="guide-header">
+        <h1>Setup Guide</h1>
+        <p>Pick your device. Follow the steps. Connect in minutes.</p>
       </div>
 
       {/* Device picker */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "nowrap",
-          overflowX: "auto",
-          gap: "0.5rem",
-          marginBottom: "2rem",
-          padding: "0.375rem",
-          background: "var(--surface)",
-          borderRadius: 999,
-          border: "1px solid var(--border)",
-          WebkitOverflowScrolling: "touch",
-        }}
-      >
+      <div className="device-tabs">
         {loading
           ? [1, 2, 3].map((i) => (
-              <div
-                key={i}
-                style={{
-                  flexShrink: 0,
-                  width: 120,
-                  height: 36,
-                  borderRadius: 999,
-                  background: "var(--surface-2)",
-                  animation: "pulse 1.5s ease-in-out infinite",
-                }}
-              />
+              <button key={i} className="device-tab" disabled style={{ opacity: 0.5 }}>
+                Loading…
+              </button>
             ))
           : devices.map((d) => {
               const isActive = d.slug === activeSlug;
@@ -144,20 +383,7 @@ export default function GuidePage() {
                 <button
                   key={d.slug}
                   onClick={() => setActiveSlug(d.slug)}
-                  style={{
-                    flexShrink: 0,
-                    padding: "0.6rem 1.25rem",
-                    borderRadius: 999,
-                    border: "none",
-                    background: isActive
-                      ? "linear-gradient(135deg, var(--accent-1), var(--accent-2))"
-                      : "transparent",
-                    color: isActive ? "#0a0a0a" : "var(--text-muted)",
-                    fontSize: "0.9rem",
-                    fontWeight: isActive ? 600 : 500,
-                    cursor: "pointer",
-                    transition: "all 0.15s",
-                  }}
+                  className={`device-tab${isActive ? " active" : ""}`}
                 >
                   {d.name}
                 </button>
@@ -183,7 +409,7 @@ export default function GuidePage() {
 
       {/* Device info + steps */}
       {loading ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+        <div>
           <StepSkeleton />
           <StepSkeleton />
           <StepSkeleton />
@@ -192,167 +418,86 @@ export default function GuidePage() {
         </div>
       ) : activeDevice ? (
         <>
-          {/* Device info */}
-          <div className="card" style={{ marginBottom: "2rem" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: "1rem",
-                marginBottom: "1rem",
-              }}
-            >
-              <div>
-                <div style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.25rem" }}>
-                  {activeDevice.name}
-                </div>
-                <div className="muted" style={{ fontSize: "0.9rem" }}>
-                  {activeDevice.app_name}
-                </div>
-              </div>
-              <a
-                href={activeDevice.download_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-                style={{ padding: "0.6rem 1.25rem", fontSize: "0.9rem" }}
-              >
-                Download {activeDevice.download_label}
-              </a>
+          {/* Device card */}
+          <div className="device-card">
+            <DeviceIcon slug={activeDevice.slug} appName={activeDevice.app_name} />
+            <div className="device-info">
+              <h2 className="device-app">{activeDevice.app_name}</h2>
+              <p className="device-name">{activeDevice.name}</p>
             </div>
-            {activeDevice.intro && (
-              <p className="muted" style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: 0 }}>
-                {activeDevice.intro}
-              </p>
-            )}
+            <a
+              href={activeDevice.download_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary"
+              style={{ flexShrink: 0 }}
+            >
+              Download app
+            </a>
+          </div>
+
+          {/* Copy link row */}
+          <CopyRow url={activeDevice.download_url} />
+
+          {/* Prerequisite alert */}
+          <div className="prereq">
+            <p>
+              <strong>⚠ Before you continue</strong>, install the {activeDevice.app_name} app
+              on your {activeDevice.name}.
+            </p>
+            <p style={{ color: "var(--text-muted, #a1a1aa)" }}>
+              Tap the orange &ldquo;Download app&rdquo; button above. After installing,
+              come back and follow the steps below.
+            </p>
           </div>
 
           {/* Steps */}
+          <h2 className="steps-title">Setup steps</h2>
           <div>
-            <h2 style={{ fontSize: "1.35rem", fontWeight: 600, marginBottom: "1.25rem" }}>
-              Setup steps
-            </h2>
-            <ol
-              style={{
-                listStyle: "none",
-                padding: 0,
-                margin: 0,
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.875rem",
-              }}
-            >
-              {activeDevice.steps.map((step, i) => (
-                <li
-                  key={i}
-                  style={{
-                    display: "flex",
-                    gap: "1rem",
-                    alignItems: "flex-start",
-                    padding: "1rem 1.25rem",
-                    background: "var(--surface)",
-                    border: "1px solid var(--border)",
-                    borderLeft: "3px solid var(--accent-1)",
-                    borderRadius: 10,
-                  }}
-                >
-                  <div
-                    style={{
-                      flexShrink: 0,
-                      width: 32,
-                      height: 32,
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, var(--accent-1), var(--accent-2))",
-                      color: "#0a0a0a",
-                      fontWeight: 700,
-                      fontSize: "0.9rem",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {i + 1}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3
-                      style={{
-                        fontSize: "1.05rem",
-                        fontWeight: 600,
-                        margin: "0 0 0.375rem",
-                      }}
-                    >
-                      {step.title}
-                    </h3>
-                    {step.body && (
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: "0.95rem",
-                          lineHeight: 1.6,
-                          color: "var(--text-muted)",
-                        }}
-                      >
-                        {step.body}
-                      </p>
-                    )}
-                    {step.image_url ? (
-                      <div style={{ marginTop: "0.75rem" }}>
-                        <img
-                          src={`${SITE.apiBase}${step.image_url}`}
-                          alt={step.image_alt || step.title}
-                          style={{
-                            width: "100%",
-                            maxWidth: 480,
-                            borderRadius: 8,
-                            border: "1px solid var(--border)",
-                            display: "block",
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div
-                        style={{
-                          marginTop: "0.75rem",
-                          padding: "1.25rem",
-                          textAlign: "center",
-                          background: "var(--surface-2)",
-                          borderRadius: 8,
-                          border: "1px dashed var(--border)",
-                        }}
-                      >
-                        <p className="muted" style={{ fontSize: "0.85rem", margin: 0 }}>
-                          Screenshot coming soon
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
+            {activeDevice.steps.map((step, i) => (
+              <div key={i} className="step-card">
+                <div className="step-num">{i + 1}</div>
+                <h3 className="step-title">{step.title}</h3>
+                {step.body && <p className="step-body">{step.body}</p>}
+                {step.image_url && (
+                  <img
+                    src={`${SITE.apiBase}${step.image_url}`}
+                    alt={step.image_alt || step.title}
+                    className="step-img"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Done card */}
+          <div className="done-card">
+            <h3>✅ You should now be connected.</h3>
+            <p>
+              If something didn&apos;t work, message us on WeChat or
+              WhatsApp and we&apos;ll help you.
+            </p>
+            <div className="done-ctas">
+              <a
+                href={CONTACT.wechat.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+              >
+                Message us on WeChat
+              </a>
+              <a
+                href={CONTACT.whatsapp.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary"
+              >
+                Message us on WhatsApp
+              </a>
+            </div>
           </div>
         </>
       ) : null}
-
-      {/* Help note */}
-      <div
-        style={{
-          marginTop: "2rem",
-          padding: "1rem 1.25rem",
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: 10,
-          textAlign: "center",
-        }}
-      >
-        <p className="muted" style={{ fontSize: "0.85rem", margin: 0 }}>
-          Need help?{" "}
-          <a href="/support" style={{ color: "var(--accent-1)" }}>
-            Contact support
-          </a>
-        </p>
-      </div>
     </div>
   );
 }
