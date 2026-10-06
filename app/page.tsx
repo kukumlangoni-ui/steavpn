@@ -25,10 +25,12 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-left">
           <h1 className="hero-title">
-            Your <span className="accent">private VPN</span> — set up in minutes
+            The VPN that works
+            <br />
+            in <span className="accent">every country</span>.
           </h1>
           <p className="hero-sub">
-            Buy a plan, pay via WeChat or bank, receive your link and connect on any device.
+            Every device. Every app. One private link, set up in minutes.
           </p>
           <div className="hero-ctas">
             <Link href="/pricing" className="btn-primary">Choose a plan</Link>
@@ -37,13 +39,14 @@ export default function HomePage() {
 
           <div className="brands">
             <p className="brands-label">WORKS WITH</p>
-            <div className="brands-image">
+            <div className="brands-image-wrap">
               <Image
                 src="/hero/social.png"
-                alt="Streaming apps and social platforms"
-                width={520}
-                height={110}
-                style={{ width: "100%", maxWidth: 520, height: "auto" }}
+                alt="Supported services"
+                width={800}
+                height={200}
+                priority
+                style={{ width: "100%", height: "auto", objectFit: "contain" }}
               />
             </div>
           </div>
@@ -126,74 +129,114 @@ export default function HomePage() {
       </section>
 
       <style>{`
+        /* HERO SECTION */
         .hero {
           display: grid;
-          grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-          gap: 3rem;
+          grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+          gap: 4rem;
           align-items: center;
-          padding: 5rem 0 4rem;
+          padding: 7rem 0 6rem;
+          min-height: 640px;
         }
+
+        /* LEFT COLUMN */
+        .hero-left {
+          display: flex;
+          flex-direction: column;
+        }
+
         .hero-title {
-          font-size: clamp(2.5rem, 5vw, 4rem);
+          font-size: clamp(2.5rem, 5.5vw, 4.5rem);
           font-weight: 800;
-          letter-spacing: -0.03em;
+          letter-spacing: -0.035em;
           line-height: 1.05;
-          margin: 0 0 1.25rem 0;
+          margin: 0 0 1.75rem 0;
+          max-width: 680px;
         }
+
         .hero-sub {
-          font-size: 1.1rem;
+          font-size: clamp(1.05rem, 1.35vw, 1.3rem);
           line-height: 1.6;
-          margin: 0 0 2rem 0;
-          max-width: 520px;
           color: var(--text-muted, #a1a1aa);
+          margin: 0 0 2.5rem 0;
+          max-width: 560px;
         }
+
         .hero-ctas {
           display: flex;
-          gap: 0.75rem;
+          gap: 1rem;
           flex-wrap: wrap;
-          margin-bottom: 3rem;
+          margin-bottom: 3.5rem;
         }
+
+        .hero-ctas .btn-primary,
+        .hero-ctas .btn-secondary {
+          padding: 1rem 1.75rem;
+          font-size: 1rem;
+        }
+
+        /* BRANDS */
         .brands-label {
           font-size: 0.8rem;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
           color: var(--text-muted, #a1a1aa);
-          margin: 0 0 1rem 0;
+          margin: 0 0 1.25rem 0;
+          font-weight: 600;
         }
-        .brands-image {
-          opacity: 0.9;
+        .brands-image-wrap {
+          max-width: 560px;
+          width: 100%;
         }
+
+        /* RIGHT COLUMN — EARTH */
         .hero-right {
           display: flex;
           justify-content: center;
           align-items: center;
         }
+
         .earth-wrap {
           position: relative;
           width: 100%;
-          max-width: 480px;
+          max-width: 560px;
           aspect-ratio: 1 / 1;
         }
+
         .earth-wrap::before {
           content: "";
           position: absolute;
-          inset: 5%;
+          inset: 3%;
           border-radius: 50%;
           background: radial-gradient(circle,
-            rgba(245,158,11,0.18) 0%,
-            rgba(245,158,11,0) 70%);
+            rgba(245,158,11,0.25) 0%,
+            rgba(245,158,11,0) 68%);
           pointer-events: none;
-          z-index: 0;
         }
-        @media (max-width: 820px) {
+
+        /* Mobile */
+        @media (max-width: 900px) {
           .hero {
             grid-template-columns: 1fr;
-            padding: 3rem 0 2rem;
+            gap: 3rem;
+            padding: 4rem 0 3rem;
+            min-height: auto;
+          }
+          .hero-title {
+            font-size: clamp(2rem, 8vw, 3rem);
           }
           .earth-wrap {
-            max-width: 320px;
-            margin: 2rem auto 0;
+            max-width: 340px;
+            margin: 1rem auto 0;
           }
+          .brands-image-wrap {
+            max-width: 100%;
+          }
+        }
+
+        /* Motion safety */
+        @media (prefers-reduced-motion: reduce) {
+          .earth-wrap img { animation: none; }
         }
       `}</style>
     </div>

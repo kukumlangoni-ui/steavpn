@@ -79,9 +79,9 @@ a {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 1.5rem;
 }
 
 .muted { color: var(--text-muted); }
