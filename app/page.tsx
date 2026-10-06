@@ -56,10 +56,10 @@ export default function HomePage() {
           <Image
             src="/hero/social.png"
             alt="Supported services"
-            width={1600}
-            height={300}
+            width={1440}
+            height={320}
             priority
-            style={{ width: "100%", height: "auto", objectFit: "contain" }}
+            style={{ maxWidth: "720px", width: "100%", height: "auto", objectFit: "contain" }}
           />
         </div>
       </section>
@@ -132,10 +132,10 @@ export default function HomePage() {
         .hero {
           display: grid;
           grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-          gap: 4rem;
+          gap: 3rem;
           align-items: center;
-          padding: 5rem 0 3rem;
-          min-height: 600px;
+          padding: 4rem 0 2rem;
+          min-height: 520px;
         }
 
         /* LEFT COLUMN */
@@ -177,8 +177,8 @@ export default function HomePage() {
 
         /* BRANDS — FULL WIDTH */
         .brands-section {
-          padding: 0 0 4rem 0;
-          margin-top: -2rem;
+          padding: 1rem 0 4rem 0;
+          margin-top: 0;
         }
 
         .brands-label {
@@ -191,7 +191,7 @@ export default function HomePage() {
         }
 
         .brands-image-wrap {
-          max-width: 100%;
+          max-width: 720px;
           width: 100%;
           opacity: 0.95;
         }
@@ -208,7 +208,7 @@ export default function HomePage() {
         .earth-wrap {
           position: relative;
           width: 100%;
-          max-width: 100%;
+          max-width: 620px;
           aspect-ratio: 1 / 1;
         }
 
@@ -227,8 +227,8 @@ export default function HomePage() {
         @media (max-width: 900px) {
           .hero {
             grid-template-columns: 1fr;
-            gap: 3rem;
-            padding: 4rem 0 2rem;
+            gap: 2rem;
+            padding: 3rem 0 1.5rem;
             min-height: auto;
           }
           .hero-title {
@@ -246,6 +246,9 @@ export default function HomePage() {
           .brands-section {
             margin-top: 0;
             padding: 0 0 3rem 0;
+          }
+          .brands-image-wrap {
+            max-width: 100%;
           }
         }
 
