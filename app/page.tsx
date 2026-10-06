@@ -133,8 +133,8 @@ export default function HomePage() {
           display: grid;
           grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
           gap: 2rem;
-          align-items: center;
-          padding: 1.25rem 0 0.5rem;
+          align-items: start;
+          padding: 1.25rem 0 0;
           min-height: auto;
         }
 
@@ -177,7 +177,7 @@ export default function HomePage() {
 
         /* BRANDS — FULL WIDTH */
         .brands-section {
-          padding: 0.5rem 0 2rem 0;
+          padding: 0.25rem 0 2rem 0;
           margin-top: 0;
         }
 
@@ -191,7 +191,7 @@ export default function HomePage() {
         }
 
         .brands-image-wrap {
-          max-width: 100%;
+          max-width: 1000px;
           width: 100%;
           opacity: 0.95;
         }
@@ -211,6 +211,7 @@ export default function HomePage() {
           max-width: 320px;
           aspect-ratio: 1 / 1;
           margin: 0 auto;
+          margin-top: 4rem;
         }
 
         .earth-wrap::before {
