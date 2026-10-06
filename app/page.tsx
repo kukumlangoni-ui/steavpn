@@ -132,10 +132,10 @@ export default function HomePage() {
         .hero {
           display: grid;
           grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-          gap: 3rem;
+          gap: 2.5rem;
           align-items: center;
-          padding: 4rem 0 2rem;
-          min-height: 520px;
+          padding: 2.5rem 0 1.5rem;
+          min-height: auto;
         }
 
         /* LEFT COLUMN */
@@ -145,39 +145,39 @@ export default function HomePage() {
         }
 
         .hero-title {
-          font-size: clamp(3rem, 6vw, 5rem);
+          font-size: clamp(2.25rem, 4.2vw, 3.75rem);
           font-weight: 800;
           letter-spacing: -0.04em;
-          line-height: 1.02;
-          margin: 0 0 1.5rem 0;
-          max-width: 620px;
+          line-height: 1.05;
+          margin: 0 0 1rem 0;
+          max-width: 560px;
           text-transform: none;
         }
 
         .hero-sub {
-          font-size: clamp(1.05rem, 1.5vw, 1.35rem);
-          line-height: 1.55;
+          font-size: clamp(1rem, 1.2vw, 1.15rem);
+          line-height: 1.5;
           color: var(--text-muted, #a1a1aa);
-          margin: 0 0 2.5rem 0;
-          max-width: 480px;
+          margin: 0 0 1.5rem 0;
+          max-width: 460px;
         }
 
         .hero-ctas {
           display: flex;
-          gap: 1rem;
+          gap: 0.75rem;
           flex-wrap: wrap;
           margin-bottom: 0;
         }
 
         .hero-ctas .btn-primary,
         .hero-ctas .btn-secondary {
-          padding: 1rem 1.75rem;
-          font-size: 1rem;
+          padding: 0.85rem 1.5rem;
+          font-size: 0.95rem;
         }
 
         /* BRANDS — FULL WIDTH */
         .brands-section {
-          padding: 1rem 0 4rem 0;
+          padding: 1rem 0 3rem 0;
           margin-top: 0;
         }
 
@@ -191,7 +191,7 @@ export default function HomePage() {
         }
 
         .brands-image-wrap {
-          max-width: 720px;
+          max-width: 640px;
           width: 100%;
           opacity: 0.95;
         }
@@ -208,7 +208,7 @@ export default function HomePage() {
         .earth-wrap {
           position: relative;
           width: 100%;
-          max-width: 620px;
+          max-width: 420px;
           aspect-ratio: 1 / 1;
         }
 
@@ -227,25 +227,21 @@ export default function HomePage() {
         @media (max-width: 900px) {
           .hero {
             grid-template-columns: 1fr;
-            gap: 2rem;
-            padding: 3rem 0 1.5rem;
-            min-height: auto;
+            gap: 1.5rem;
+            padding: 2rem 0 1rem;
           }
           .hero-title {
-            font-size: clamp(2.25rem, 9vw, 3.5rem);
-            letter-spacing: -0.035em;
-            max-width: 100%;
+            font-size: clamp(2rem, 8vw, 2.75rem);
           }
           .hero-sub {
             max-width: 100%;
           }
           .earth-wrap {
-            max-width: 340px;
+            max-width: 260px;
             margin: 1rem auto 0;
           }
           .brands-section {
-            margin-top: 0;
-            padding: 0 0 3rem 0;
+            padding: 0.5rem 0 2rem 0;
           }
           .brands-image-wrap {
             max-width: 100%;
