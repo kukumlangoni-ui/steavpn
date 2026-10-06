@@ -51,15 +51,13 @@ export default function HomePage() {
 
         <div className="hero-right">
           <div className="earth-wrap">
-            <div className="earth-spin">
-              <Image
-                src="/hero/earth.png"
-                alt="Global network"
-                fill
-                priority
-                style={{ objectFit: "contain" }}
-              />
-            </div>
+            <Image
+              src="/hero/earth.png"
+              alt="Global network"
+              fill
+              priority
+              style={{ objectFit: "contain" }}
+            />
           </div>
         </div>
       </section>
@@ -175,7 +173,6 @@ export default function HomePage() {
           width: 100%;
           max-width: 480px;
           aspect-ratio: 1 / 1;
-          perspective: 1000px;
         }
         .earth-wrap::before {
           content: "";
@@ -187,22 +184,6 @@ export default function HomePage() {
             rgba(245,158,11,0) 70%);
           pointer-events: none;
           z-index: 0;
-        }
-        .earth-spin {
-          position: absolute;
-          inset: 0;
-          transform-style: preserve-3d;
-          animation: earth-spin-y 30s linear infinite;
-        }
-        .earth-spin img {
-          backface-visibility: hidden;
-        }
-        @keyframes earth-spin-y {
-          from { transform: rotateY(0deg); }
-          to   { transform: rotateY(360deg); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .earth-spin { animation: none; }
         }
         @media (max-width: 820px) {
           .hero {
