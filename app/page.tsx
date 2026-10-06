@@ -27,10 +27,10 @@ export default function HomePage() {
           <h1 className="hero-title">
             The VPN that works
             <br />
-            in <span className="accent">every country</span>.
+            <span className="accent">everywhere. every device.</span>
           </h1>
           <p className="hero-sub">
-            Every device. Every app. One private link, set up in minutes.
+            One private link, set up in minutes.
           </p>
           <div className="hero-ctas">
             <Link href="/pricing" className="btn-primary">Choose a plan</Link>
@@ -146,12 +146,13 @@ export default function HomePage() {
         }
 
         .hero-title {
-          font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+          font-size: clamp(1.75rem, 4vw, 3.25rem);
           font-weight: 800;
-          letter-spacing: -0.035em;
-          line-height: 1.05;
+          letter-spacing: -0.015em;
+          line-height: 1.12;
           margin: 0 0 1.75rem 0;
-          max-width: 680px;
+          max-width: 720px;
+          text-transform: uppercase;
         }
 
         .hero-sub {
