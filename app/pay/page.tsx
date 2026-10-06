@@ -171,8 +171,14 @@ export default function PayPage() {
   const alipayQrUrl = settings?.alipay_qr_url ? SITE.apiBase + settings.alipay_qr_url : null;
 
   const wechatId = settings?.wechat_id || '';
+  const alipayId = settings?.alipay_id || '';
   const whatsapp = settings?.whatsapp || '';
   const email = settings?.email || '';
+
+  const wechatHasQr = !!wechatQrUrl;
+  const wechatHasId = !!(wechatId && wechatId.trim());
+  const alipayHasQr = !!alipayQrUrl;
+  const alipayHasId = !!(alipayId && alipayId.trim());
 
   const bankName = settings?.bank_name || '';
   const bankAccountName = settings?.bank_account_name || '';
@@ -206,34 +212,69 @@ export default function PayPage() {
           <h2 style={{ fontSize: "1.25rem", fontWeight: 600, margin: 0 }}>Pay via WeChat</h2>
         </div>
         <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", alignItems: "flex-start" }}>
-          <QrImage
-            src={wechatQrUrl}
-            alt="WeChat QR code"
-            fallbackText={`Open WeChat, add our ID:\n${wechatId}`}
-          />
+          {wechatHasQr ? (
+            <QrImage
+              src={wechatQrUrl}
+              alt="WeChat QR code"
+              fallbackText=""
+            />
+          ) : null}
           <div style={{ flex: 1, minWidth: 200 }}>
-            <p style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
-              {wechatQrUrl
-                ? "Open WeChat, scan the QR code, or add our ID:"
-                : "Open WeChat and add our ID to send payment:"}
-            </p>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem",
-                padding: "0.75rem 1rem",
-                background: "var(--surface-2)",
-                borderRadius: 8,
-                border: "1px solid var(--border)",
-                marginBottom: "0.75rem",
-              }}
-            >
-              <code style={{ fontSize: "1rem", fontWeight: 600, flex: 1 }}>
-                {wechatId}
-              </code>
-              <CopyButton text={wechatId} />
-            </div>
+            {wechatHasQr && wechatHasId ? (
+              <>
+                <p style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
+                  Scan the QR with WeChat, or add our ID:
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.75rem 1rem",
+                    background: "var(--surface-2)",
+                    borderRadius: 8,
+                    border: "1px solid var(--border)",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <code style={{ fontSize: "1rem", fontWeight: 600, flex: 1 }}>
+                    {wechatId}
+                  </code>
+                  <CopyButton text={wechatId} />
+                </div>
+              </>
+            ) : wechatHasQr ? (
+              <p style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
+                Scan this QR code with WeChat to pay.
+              </p>
+            ) : wechatHasId ? (
+              <>
+                <p style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
+                  Open WeChat, add our ID to send payment:
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.75rem 1rem",
+                    background: "var(--surface-2)",
+                    borderRadius: 8,
+                    border: "1px solid var(--border)",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <code style={{ fontSize: "1rem", fontWeight: 600, flex: 1 }}>
+                    {wechatId}
+                  </code>
+                  <CopyButton text={wechatId} />
+                </div>
+              </>
+            ) : (
+              <p style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
+                WeChat not set up yet. Please use bank transfer.
+              </p>
+            )}
             <p className="muted" style={{ fontSize: "0.85rem", lineHeight: 1.6, margin: 0 }}>
               After paying, screenshot the payment confirmation and send it to us.
             </p>
@@ -306,42 +347,33 @@ export default function PayPage() {
           Pay via Alipay
         </h2>
         <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", alignItems: "flex-start" }}>
-          <QrImage
-            src={alipayQrUrl}
-            alt="Alipay QR code"
-            fallbackText={settings?.alipay_id
-              ? `Alipay ID:\n${settings.alipay_id}`
-              : "Alipay payment coming soon. Please use WeChat or bank transfer for now."}
-          />
+          {alipayHasQr ? (
+            <QrImage
+              src={alipayQrUrl}
+              alt="Alipay QR code"
+              fallbackText=""
+            />
+          ) : null}
           <div style={{ flex: 1, minWidth: 200 }}>
-            {settings?.alipay_id ? (
+            {alipayHasQr && alipayHasId ? (
               <>
                 <p style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
-                  {alipayQrUrl
-                    ? "Scan the QR code with Alipay to make payment."
-                    : "Open Alipay and search for this ID to pay:"}
+                  Scan the QR with Alipay, or add ID: {alipayId}
                 </p>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    padding: "0.75rem 1rem",
-                    background: "var(--surface-2)",
-                    borderRadius: 8,
-                    border: "1px solid var(--border)",
-                    marginBottom: "0.75rem",
-                  }}
-                >
-                  <code style={{ fontSize: "1rem", fontWeight: 600, flex: 1 }}>
-                    {settings.alipay_id}
-                  </code>
-                  <CopyButton text={settings.alipay_id} />
-                </div>
+              </>
+            ) : alipayHasQr ? (
+              <p style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
+                Scan this QR code with Alipay to make payment.
+              </p>
+            ) : alipayHasId ? (
+              <>
+                <p style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
+                  Open Alipay and send payment to ID: {alipayId}
+                </p>
               </>
             ) : (
               <p style={{ fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
-                Alipay ID not set up yet. Please use WeChat or bank transfer.
+                Alipay not set up yet. Please use WeChat or bank transfer.
               </p>
             )}
             <p className="muted" style={{ fontSize: "0.85rem", lineHeight: 1.6, margin: 0 }}>
