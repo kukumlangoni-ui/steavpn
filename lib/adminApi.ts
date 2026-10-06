@@ -75,8 +75,12 @@ export const adminApi = {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Upload failed');
-    return data as { ok: boolean; url: string; step: any };
+    return data as { ok: boolean; image: { id: number; url: string; alt: string } };
   },
+  deleteStepImage: (imageId: number) =>
+    request<{ ok: boolean }>(`/api/admin/guide/images/${imageId}`, {
+      method: 'DELETE',
+    }),
   reorderSteps: (deviceId: number, order: number[]) =>
     request<{ ok: boolean }>('/api/admin/guide/reorder', {
       method: 'POST',

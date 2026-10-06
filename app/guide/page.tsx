@@ -3,12 +3,19 @@
 import { useEffect, useState } from "react";
 import { SITE, CONTACT } from "@/lib/config";
 
+interface StepImage {
+  id: number;
+  url: string;
+  alt: string;
+}
+
 interface Step {
   step_number: number;
   title: string;
   body: string | null;
   image_url: string | null;
   image_alt: string | null;
+  images: StepImage[];
 }
 
 interface Device {
@@ -330,6 +337,20 @@ export default function GuidePage() {
           margin-top: 1rem;
           border: 1px solid var(--border, #1f1f1f);
         }
+        .step-imgs-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+          margin-top: 1rem;
+        }
+        .step-imgs-grid .step-img {
+          margin-top: 0;
+        }
+        @media (max-width: 600px) {
+          .step-imgs-grid {
+            grid-template-columns: 1fr;
+          }
+        }
 
         .done-card {
           margin-top: 3rem;
@@ -459,12 +480,17 @@ export default function GuidePage() {
                 <div className="step-num">{i + 1}</div>
                 <h3 className="step-title">{step.title}</h3>
                 {step.body && <p className="step-body">{step.body}</p>}
-                {step.image_url && (
-                  <img
-                    src={`${SITE.apiBase}${step.image_url}`}
-                    alt={step.image_alt || step.title}
-                    className="step-img"
-                  />
+                {step.images && step.images.length > 0 && (
+                  <div className={step.images.length > 1 ? 'step-imgs-grid' : ''}>
+                    {step.images.map((img) => (
+                      <img
+                        key={img.id}
+                        src={`${SITE.apiBase}${img.url}`}
+                        alt={img.alt}
+                        className="step-img"
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
             ))}
