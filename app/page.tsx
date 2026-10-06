@@ -1,16 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const BRANDS = [
-  { name: "Netflix",     src: "/brands/netflix.svg" },
-  { name: "Disney+",     src: "/brands/disneyplus.svg" },
-  { name: "Hulu",        src: "/brands/hulu.svg" },
-  { name: "Max",         src: "/brands/max.svg" },
-  { name: "Prime Video", src: "/brands/primevideo.svg" },
-  { name: "TikTok",      src: "/brands/tiktok.svg" },
-  { name: "ChatGPT",     src: "/brands/chatgpt.svg" },
-];
-
 const STEPS = [
   {
     n: "01",
@@ -47,31 +37,29 @@ export default function HomePage() {
 
           <div className="brands">
             <p className="brands-label">WORKS WITH</p>
-            <div className="brands-row">
-              {BRANDS.map((b) => (
-                <div key={b.name} className="brand-item" title={b.name}>
-                  <Image
-                    src={b.src}
-                    alt={b.name}
-                    width={90}
-                    height={28}
-                    style={{ height: 28, width: "auto" }}
-                  />
-                </div>
-              ))}
+            <div className="brands-image">
+              <Image
+                src="/hero/social.png"
+                alt="Streaming apps and social platforms"
+                width={520}
+                height={110}
+                style={{ width: "100%", maxWidth: 520, height: "auto" }}
+              />
             </div>
           </div>
         </div>
 
         <div className="hero-right">
           <div className="earth-wrap">
-            <Image
-              src="/hero/earth.png"
-              alt="Global network"
-              fill
-              priority
-              style={{ objectFit: "contain" }}
-            />
+            <div className="earth-spin">
+              <Image
+                src="/hero/earth.png"
+                alt="Global network"
+                fill
+                priority
+                style={{ objectFit: "contain" }}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -174,20 +162,8 @@ export default function HomePage() {
           color: var(--text-muted, #a1a1aa);
           margin: 0 0 1rem 0;
         }
-        .brands-row {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1.5rem 2rem;
-          align-items: center;
-        }
-        .brand-item {
-          display: flex;
-          align-items: center;
-          opacity: 0.85;
-          transition: opacity 0.2s;
-        }
-        .brand-item:hover {
-          opacity: 1;
+        .brands-image {
+          opacity: 0.9;
         }
         .hero-right {
           display: flex;
@@ -199,6 +175,7 @@ export default function HomePage() {
           width: 100%;
           max-width: 480px;
           aspect-ratio: 1 / 1;
+          perspective: 1000px;
         }
         .earth-wrap::before {
           content: "";
@@ -209,16 +186,23 @@ export default function HomePage() {
             rgba(245,158,11,0.18) 0%,
             rgba(245,158,11,0) 70%);
           pointer-events: none;
+          z-index: 0;
         }
-        .earth-wrap img {
-          animation: earth-spin 60s linear infinite;
+        .earth-spin {
+          position: absolute;
+          inset: 0;
+          transform-style: preserve-3d;
+          animation: earth-spin-y 30s linear infinite;
         }
-        @keyframes earth-spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
+        .earth-spin img {
+          backface-visibility: hidden;
+        }
+        @keyframes earth-spin-y {
+          from { transform: rotateY(0deg); }
+          to   { transform: rotateY(360deg); }
         }
         @media (prefers-reduced-motion: reduce) {
-          .earth-wrap img { animation: none; }
+          .earth-spin { animation: none; }
         }
         @media (max-width: 820px) {
           .hero {
