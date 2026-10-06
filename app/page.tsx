@@ -131,10 +131,10 @@ export default function HomePage() {
         /* HERO SECTION */
         .hero {
           display: grid;
-          grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-          gap: 2.5rem;
+          grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+          gap: 2rem;
           align-items: center;
-          padding: 2.5rem 0 1.5rem;
+          padding: 1.25rem 0 0.5rem;
           min-height: auto;
         }
 
@@ -145,21 +145,21 @@ export default function HomePage() {
         }
 
         .hero-title {
-          font-size: clamp(2.25rem, 4.2vw, 3.75rem);
+          font-size: clamp(1.75rem, 3.4vw, 3rem);
           font-weight: 800;
-          letter-spacing: -0.04em;
-          line-height: 1.05;
-          margin: 0 0 1rem 0;
-          max-width: 560px;
+          letter-spacing: -0.03em;
+          line-height: 1.04;
+          margin: 0 0 0.75rem 0;
+          max-width: 500px;
           text-transform: none;
         }
 
         .hero-sub {
-          font-size: clamp(1rem, 1.2vw, 1.15rem);
-          line-height: 1.5;
+          font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+          line-height: 1.45;
           color: var(--text-muted, #a1a1aa);
-          margin: 0 0 1.5rem 0;
-          max-width: 460px;
+          margin: 0 0 1rem 0;
+          max-width: 440px;
         }
 
         .hero-ctas {
@@ -171,27 +171,27 @@ export default function HomePage() {
 
         .hero-ctas .btn-primary,
         .hero-ctas .btn-secondary {
-          padding: 0.85rem 1.5rem;
-          font-size: 0.95rem;
+          padding: 0.7rem 1.25rem;
+          font-size: 0.9rem;
         }
 
         /* BRANDS — FULL WIDTH */
         .brands-section {
-          padding: 1rem 0 3rem 0;
+          padding: 0.5rem 0 2rem 0;
           margin-top: 0;
         }
 
         .brands-label {
-          font-size: 0.8rem;
+          font-size: 0.7rem;
           letter-spacing: 0.14em;
           text-transform: uppercase;
           color: var(--text-muted, #a1a1aa);
-          margin: 0 0 1.25rem 0;
+          margin: 0 0 0.75rem 0;
           font-weight: 600;
         }
 
         .brands-image-wrap {
-          max-width: 640px;
+          max-width: 100%;
           width: 100%;
           opacity: 0.95;
         }
@@ -208,8 +208,9 @@ export default function HomePage() {
         .earth-wrap {
           position: relative;
           width: 100%;
-          max-width: 420px;
+          max-width: 320px;
           aspect-ratio: 1 / 1;
+          margin: 0 auto;
         }
 
         .earth-wrap::before {
@@ -227,21 +228,21 @@ export default function HomePage() {
         @media (max-width: 900px) {
           .hero {
             grid-template-columns: 1fr;
-            gap: 1.5rem;
-            padding: 2rem 0 1rem;
+            gap: 1rem;
+            padding: 1rem 0 0.5rem;
           }
           .hero-title {
-            font-size: clamp(2rem, 8vw, 2.75rem);
+            font-size: clamp(1.75rem, 7vw, 2.5rem);
           }
           .hero-sub {
             max-width: 100%;
           }
           .earth-wrap {
-            max-width: 260px;
-            margin: 1rem auto 0;
+            max-width: 220px;
+            margin: 0.75rem auto 0;
           }
           .brands-section {
-            padding: 0.5rem 0 2rem 0;
+            padding: 0.25rem 0 1.5rem 0;
           }
           .brands-image-wrap {
             max-width: 100%;

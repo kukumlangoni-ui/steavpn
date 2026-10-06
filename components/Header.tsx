@@ -14,9 +14,9 @@ export default function Header() {
         borderBottom: "1px solid var(--border)",
       }}
     >
-      <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-          <Image src="/logo.png" alt={SITE.name} width={32} height={32} priority />
+      <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Image src="/logo.png" alt={SITE.name} width={28} height={28} priority />
           <span style={{ fontWeight: 700, fontSize: "1.05rem", letterSpacing: "-0.01em" }}>
             STEA <span className="accent">VPN</span>
           </span>
@@ -27,9 +27,9 @@ export default function Header() {
               key={item.href}
               href={item.href}
               style={{
-                padding: "0.5rem 0.9rem",
+                padding: "0.4rem 0.8rem",
                 borderRadius: 8,
-                fontSize: "0.92rem",
+                fontSize: "0.9rem",
                 fontWeight: 500,
                 color: "var(--text-muted)",
               }}
