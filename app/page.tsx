@@ -23,29 +23,19 @@ export default function HomePage() {
   return (
     <div className="container">
       <section className="hero">
-        <div className="hero-left">
+        <div className="hero-inner">
           <h1 className="hero-title">
             VPN <span className="accent">without borders.</span>
           </h1>
 
           <p className="hero-sub">
-            Works in every country. On every device. One link, set up in minutes.
+            Works in every country. On every device.
+            One link, set up in minutes.
           </p>
+
           <div className="hero-ctas">
             <Link href="/pricing" className="btn-primary">Choose a plan</Link>
             <Link href="/guide" className="btn-secondary">How to set up</Link>
-          </div>
-        </div>
-
-        <div className="hero-right">
-          <div className="earth-wrap">
-            <Image
-              src="/hero/earth.png"
-              alt="Global network"
-              fill
-              priority
-              style={{ objectFit: "contain" }}
-            />
           </div>
         </div>
       </section>
@@ -59,7 +49,7 @@ export default function HomePage() {
             width={1440}
             height={320}
             priority
-            style={{ maxWidth: "720px", width: "100%", height: "auto", objectFit: "contain" }}
+            style={{ width: "100%", height: "auto", objectFit: "contain" }}
           />
         </div>
       </section>
@@ -128,127 +118,99 @@ export default function HomePage() {
       </section>
 
       <style>{`
-        /* HERO SECTION */
+        /* HERO — CENTERED */
         .hero {
-          display: grid;
-          grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-          gap: 3rem;
-          align-items: center;
-          padding: 2rem 0 1rem;
-          min-height: auto;
+          padding: 5rem 0 2rem;
+          text-align: center;
         }
 
-        /* LEFT COLUMN */
-        .hero-left {
+        .hero-inner {
+          max-width: 780px;
+          margin: 0 auto;
           display: flex;
           flex-direction: column;
+          align-items: center;
         }
 
         .hero-title {
-          font-size: clamp(2.5rem, 4.5vw, 4rem);
+          font-size: clamp(2.5rem, 5.5vw, 4.75rem);
           font-weight: 800;
-          letter-spacing: -0.035em;
+          letter-spacing: -0.04em;
           line-height: 1.02;
-          margin: 0 0 1rem 0;
-          max-width: 620px;
+          margin: 0 0 1.5rem 0;
           text-transform: none;
         }
 
         .hero-sub {
-          font-size: clamp(1.05rem, 1.3vw, 1.25rem);
-          line-height: 1.5;
+          font-size: clamp(1.05rem, 1.4vw, 1.3rem);
+          line-height: 1.55;
           color: var(--text-muted, #a1a1aa);
-          margin: 0 0 1.75rem 0;
-          max-width: 520px;
+          margin: 0 0 2.5rem 0;
+          max-width: 560px;
         }
 
         .hero-ctas {
           display: flex;
-          gap: 0.75rem;
+          gap: 1rem;
           flex-wrap: wrap;
-          margin-bottom: 0;
+          justify-content: center;
         }
 
         .hero-ctas .btn-primary,
         .hero-ctas .btn-secondary {
-          padding: 0.9rem 1.6rem;
-          font-size: 0.98rem;
+          padding: 1rem 1.75rem;
+          font-size: 1rem;
         }
 
-        /* BRANDS — FULL WIDTH */
+        /* BRANDS — CENTERED */
         .brands-section {
-          padding: 1rem 0 2rem 0;
+          padding: 1rem 0 3rem 0;
           margin-top: 0;
+          text-align: center;
         }
 
         .brands-label {
-          font-size: 0.75rem;
-          letter-spacing: 0.14em;
+          font-size: 0.8rem;
+          letter-spacing: 0.16em;
           text-transform: uppercase;
           color: var(--text-muted, #a1a1aa);
-          margin: 0 0 1rem 0;
+          margin: 0 0 1.5rem 0;
           font-weight: 600;
         }
 
         .brands-image-wrap {
           max-width: 900px;
           width: 100%;
-          opacity: 0.95;
-        }
-
-        /* RIGHT COLUMN — EARTH */
-        .hero-right {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 100%;
-          height: 100%;
-        }
-
-        .earth-wrap {
-          position: relative;
-          width: 100%;
-          max-width: 440px;
-          aspect-ratio: 1 / 1;
           margin: 0 auto;
-        }
-
-        .earth-wrap::before {
-          content: "";
-          position: absolute;
-          inset: 3%;
-          border-radius: 50%;
-          background: radial-gradient(circle,
-            rgba(245,158,11,0.25) 0%,
-            rgba(245,158,11,0) 68%);
-          pointer-events: none;
+          opacity: 0.95;
         }
 
         /* Mobile */
         @media (max-width: 900px) {
           .hero {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            padding: 1.25rem 0 0.5rem;
+            padding: 3rem 0 1.5rem;
           }
           .hero-title {
-            font-size: clamp(2rem, 8vw, 2.75rem);
+            font-size: clamp(2rem, 9vw, 3rem);
+            letter-spacing: -0.03em;
           }
           .hero-sub {
-            max-width: 100%;
+            font-size: 1rem;
+            margin-bottom: 2rem;
           }
-          .earth-wrap {
-            max-width: 260px;
-            margin: 0.5rem auto 0;
+          .hero-ctas {
+            width: 100%;
+            flex-direction: column;
+            gap: 0.75rem;
+          }
+          .hero-ctas .btn-primary,
+          .hero-ctas .btn-secondary {
+            width: 100%;
+            justify-content: center;
           }
           .brands-image-wrap {
             max-width: 100%;
           }
-        }
-
-        /* Motion safety */
-        @media (prefers-reduced-motion: reduce) {
-          .earth-wrap img { animation: none; }
         }
       `}</style>
     </div>
