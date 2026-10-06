@@ -564,27 +564,9 @@ export default {
       const result = [];
       for (const device of devices.results) {
         const steps = await env.DB
-          .prepare('SELECT id, step_number, title, body, image_key, image_alt FROM guide_steps WHERE device_id = ? ORDER BY step_number')
+          .prepare('SELECT id, step_number, title, body FROM guide_steps WHERE device_id = ? ORDER BY step_number')
           .bind(device.id)
-          .all<{ id: number; step_number: number; title: string; body: string | null; image_key: string | null; image_alt: string | null }>();
-
-        // Fetch all images for these steps from guide_step_images
-        let stepImages: Array<{ id: number; step_id: number; image_key: string; image_alt: string | null; sort_order: number }> = [];
-        if (steps.results.length > 0) {
-          const placeholders = steps.results.map(() => '?').join(',');
-          const imageRes = await env.DB
-            .prepare(`SELECT id, step_id, image_key, image_alt, sort_order FROM guide_step_images WHERE step_id IN (${placeholders}) ORDER BY step_id, sort_order, id`)
-            .bind(...steps.results.map((s) => s.id))
-            .all<{ id: number; step_id: number; image_key: string; image_alt: string | null; sort_order: number }>();
-          stepImages = imageRes.results;
-        }
-
-        // Group images by step_id
-        const grouped: Record<number, typeof stepImages> = {};
-        for (const img of stepImages) {
-          if (!grouped[img.step_id]) grouped[img.step_id] = [];
-          grouped[img.step_id].push(img);
-        }
+          .all<{ id: number; step_number: number; title: string; body: string | null }>();
 
         result.push({
           id: device.id,
@@ -594,62 +576,16 @@ export default {
           download_label: device.download_label,
           download_url: device.download_url,
           intro: device.intro,
-          steps: steps.results.map((s) => {
-            const imgs = grouped[s.id] || [];
-            return {
-              id: s.id,
-              step_number: s.step_number,
-              title: s.title,
-              body: s.body,
-              image_url: imgs.length > 0 ? `/api/guide/images/id/${imgs[0].id}` : (s.image_key ? `/api/guide/images/${device.slug}/${s.image_key.split('/').pop()}` : null),
-              image_alt: s.image_alt,
-              images: imgs.map((img) => ({
-                id: img.id,
-                url: `/api/guide/images/id/${img.id}`,
-                alt: img.image_alt || s.title,
-              })),
-            };
-          }),
+          steps: steps.results.map((s) => ({
+            id: s.id,
+            step_number: s.step_number,
+            title: s.title,
+            body: s.body,
+          })),
         });
       }
 
       return json({ devices: result }, 200, cors(origin));
-    }
-
-    // Serve guide images from R2 (by slug/filename — legacy path)
-    const imageMatch = url.pathname.match(/^\/api\/guide\/images\/([^/]+)\/(.+)$/);
-    if (imageMatch && request.method === 'GET') {
-      const slug = imageMatch[1];
-      const filename = imageMatch[2];
-      const key = `${slug}/${filename}`;
-      const obj = await env.GUIDE_IMAGES.get(key);
-      if (!obj) return new Response('Not found', { status: 404, headers: cors(origin) });
-
-      const headers = new Headers();
-      headers.set('Content-Type', obj.httpMetadata?.contentType || 'image/png');
-      headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-      Object.entries(cors(origin)).forEach(([k, v]) => headers.set(k, v));
-      return new Response(obj.body as unknown as BodyInit, { status: 200, headers });
-    }
-
-    // Serve guide images from R2 (by image id — new path)
-    const imageByIdMatch = url.pathname.match(/^\/api\/guide\/images\/id\/(\d+)$/);
-    if (imageByIdMatch && request.method === 'GET') {
-      const id = parseInt(imageByIdMatch[1], 10);
-      const row = await env.DB
-        .prepare('SELECT image_key FROM guide_step_images WHERE id = ?')
-        .bind(id)
-        .first<{ image_key: string }>();
-      if (!row) return new Response('Not found', { status: 404, headers: cors(origin) });
-
-      const obj = await env.GUIDE_IMAGES.get(row.image_key);
-      if (!obj) return new Response('Not found', { status: 404, headers: cors(origin) });
-
-      const headers = new Headers();
-      headers.set('Content-Type', obj.httpMetadata?.contentType || 'image/png');
-      headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-      Object.entries(cors(origin)).forEach(([k, v]) => headers.set(k, v));
-      return new Response(obj.body as unknown as BodyInit, { status: 200, headers });
     }
 
     // ─── Guide: admin endpoints ────────────────────────────────────────
@@ -696,18 +632,18 @@ export default {
       if (body.id) {
         await env.DB
           .prepare(`UPDATE guide_steps SET
-            step_number = ?, title = ?, body = ?, image_alt = ?, updated_at = datetime('now')
+            step_number = ?, title = ?, body = ?, updated_at = datetime('now')
             WHERE id = ?`)
-          .bind(body.step_number ?? 1, body.title, body.body ?? null, body.image_alt ?? null, body.id)
+          .bind(body.step_number ?? 1, body.title, body.body ?? null, body.id)
           .run();
         const step = await env.DB.prepare('SELECT * FROM guide_steps WHERE id = ?').bind(body.id).first();
         return json({ ok: true, step }, 200, cors(origin));
       } else {
         const result = await env.DB
           .prepare(`INSERT INTO guide_steps
-            (device_id, step_number, title, body, image_alt)
-            VALUES (?, ?, ?, ?, ?)`)
-          .bind(body.device_id, body.step_number ?? 1, body.title, body.body ?? null, body.image_alt ?? null)
+            (device_id, step_number, title, body)
+            VALUES (?, ?, ?, ?)`)
+          .bind(body.device_id, body.step_number ?? 1, body.title, body.body ?? null)
           .run();
         const step = await env.DB.prepare('SELECT * FROM guide_steps WHERE id = ?').bind(result.meta.last_row_id).first();
         return json({ ok: true, step }, 201, cors(origin));
@@ -717,112 +653,7 @@ export default {
     const stepDeleteMatch = url.pathname.match(/^\/api\/admin\/guide\/steps\/(\d+)$/);
     if (stepDeleteMatch && request.method === 'DELETE') {
       const id = parseInt(stepDeleteMatch[1], 10);
-      const step = await env.DB.prepare('SELECT image_key FROM guide_steps WHERE id = ?').bind(id).first<{ image_key: string | null }>();
-      if (step?.image_key) {
-        await env.GUIDE_IMAGES.delete(step.image_key);
-      }
       await env.DB.prepare('DELETE FROM guide_steps WHERE id = ?').bind(id).run();
-      return json({ ok: true }, 200, cors(origin));
-    }
-
-    if (url.pathname === '/api/admin/guide/upload' && request.method === 'POST') {
-      const formData = await request.formData();
-      const slug = formData.get('slug') as string | null;
-      const file = formData.get('file') as File | null;
-      const stepIdStr = formData.get('step_id') as string | null;
-
-      if (!slug || !file || !stepIdStr) {
-        return json({ error: 'slug, file, and step_id are required' }, 400, cors(origin));
-      }
-
-      const stepId = parseInt(stepIdStr, 10);
-
-      // Validate file type and size
-      const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        return json({ error: 'Only PNG, JPEG, and WebP images are allowed' }, 400, cors(origin));
-      }
-
-      const maxSize = 5 * 1024 * 1024; // 5 MB
-      if (file.size > maxSize) {
-        return json({ error: 'Image must be under 5 MB' }, 400, cors(origin));
-      }
-
-      // Get step info to determine step_number
-      const step = await env.DB
-        .prepare('SELECT step_number, device_id FROM guide_steps WHERE id = ?')
-        .bind(stepId)
-        .first<{ step_number: number; device_id: number }>();
-      if (!step) return json({ error: 'Step not found' }, 404, cors(origin));
-
-      const ext = file.type === 'image/png' ? 'png' : file.type === 'image/jpeg' ? 'jpg' : 'webp';
-      const timestamp = Date.now();
-      const key = `${slug}/step-${step.step_number}-${timestamp}.${ext}`;
-
-      // Determine sort order: current max + 1
-      const maxRow = await env.DB
-        .prepare('SELECT COALESCE(MAX(sort_order), -1) as max_sort FROM guide_step_images WHERE step_id = ?')
-        .bind(stepId)
-        .first<{ max_sort: number }>();
-      const sortOrder = (maxRow?.max_sort ?? -1) + 1;
-
-      // Upload to R2
-      const arrayBuffer = await file.arrayBuffer();
-      await env.GUIDE_IMAGES.put(key, arrayBuffer, {
-        httpMetadata: { contentType: file.type },
-      });
-
-      // Insert new row in guide_step_images
-      const result = await env.DB
-        .prepare('INSERT INTO guide_step_images (step_id, image_key, image_alt, sort_order) VALUES (?, ?, ?, ?)')
-        .bind(stepId, key, null, sortOrder)
-        .run();
-
-      const imageId = result.meta.last_row_id;
-
-      return json({
-        ok: true,
-        image: {
-          id: imageId,
-          url: `/api/guide/images/id/${imageId}`,
-          alt: '',
-        },
-      }, 200, cors(origin));
-    }
-
-    // Delete a single step image
-    const deleteImageMatch = url.pathname.match(/^\/api\/admin\/guide\/images\/(\d+)$/);
-    if (deleteImageMatch && request.method === 'DELETE') {
-      const imageId = parseInt(deleteImageMatch[1], 10);
-
-      const row = await env.DB
-        .prepare('SELECT id, step_id, image_key FROM guide_step_images WHERE id = ?')
-        .bind(imageId)
-        .first<{ id: number; step_id: number; image_key: string }>();
-
-      if (!row) {
-        return json({ error: 'Image not found' }, 404, cors(origin));
-      }
-
-      // Delete from R2
-      await env.GUIDE_IMAGES.delete(row.image_key);
-
-      // Delete from DB
-      await env.DB.prepare('DELETE FROM guide_step_images WHERE id = ?').bind(imageId).run();
-
-      // If this was the only image and guide_steps.image_key still references it, null it out
-      const remaining = await env.DB
-        .prepare('SELECT COUNT(*) as count FROM guide_step_images WHERE step_id = ?')
-        .bind(row.step_id)
-        .first<{ count: number }>();
-
-      if ((remaining?.count ?? 0) === 0) {
-        await env.DB
-          .prepare("UPDATE guide_steps SET image_key = NULL, updated_at = datetime('now') WHERE id = ?")
-          .bind(row.step_id)
-          .run();
-      }
-
       return json({ ok: true }, 200, cors(origin));
     }
 

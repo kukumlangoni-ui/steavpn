@@ -63,24 +63,6 @@ export const adminApi = {
     request<{ ok: boolean; step: any }>('/api/admin/guide/steps', { method: 'POST', body: JSON.stringify(data) }),
   deleteStep: (id: number) =>
     request<{ ok: boolean }>(`/api/admin/guide/steps/${id}`, { method: 'DELETE' }),
-  uploadStepImage: async (slug: string, stepId: number, file: File) => {
-    const formData = new FormData();
-    formData.append('slug', slug);
-    formData.append('step_id', String(stepId));
-    formData.append('file', file);
-    const res = await fetch(`${SITE.apiBase}/api/admin/guide/upload`, {
-      method: 'POST',
-      credentials: 'include',
-      body: formData,
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Upload failed');
-    return data as { ok: boolean; image: { id: number; url: string; alt: string } };
-  },
-  deleteStepImage: (imageId: number) =>
-    request<{ ok: boolean }>(`/api/admin/guide/images/${imageId}`, {
-      method: 'DELETE',
-    }),
   reorderSteps: (deviceId: number, order: number[]) =>
     request<{ ok: boolean }>('/api/admin/guide/reorder', {
       method: 'POST',

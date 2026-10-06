@@ -3,21 +3,11 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { adminApi } from '@/lib/adminApi';
 
-interface StepImage {
-  id: number;
-  url: string;
-  alt: string;
-}
-
 interface Step {
   id: number;
   step_number: number;
   title: string;
   body: string | null;
-  image_key: string | null;
-  image_url: string | null;
-  image_alt: string | null;
-  images: StepImage[];
 }
 
 interface Device {
@@ -54,9 +44,7 @@ export default function GuideEditPage() {
   const [stepForm, setStepForm] = useState({
     title: '',
     body: '',
-    image_alt: '',
   });
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -82,7 +70,6 @@ export default function GuideEditPage() {
             setStepForm({
               title: d.steps[0].title,
               body: d.steps[0].body || '',
-              image_alt: d.steps[0].image_alt || '',
             });
           }
         }
@@ -100,7 +87,6 @@ export default function GuideEditPage() {
     setStepForm({
       title: step.title,
       body: step.body || '',
-      image_alt: step.image_alt || '',
     });
     setError('');
     setSuccess('');
@@ -147,35 +133,6 @@ export default function GuideEditPage() {
     }
   }
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!device || !selectedStep || !e.target.files?.[0]) return;
-    const file = e.target.files[0];
-    setUploading(true);
-    setError('');
-    try {
-      await adminApi.uploadStepImage(device.slug, selectedStep.id, file);
-      setSuccess('Image uploaded');
-      setTimeout(() => setSuccess(''), 2000);
-      load();
-    } catch (err: any) {
-      setError(err.message || 'Upload failed');
-    } finally {
-      setUploading(false);
-      e.target.value = '';
-    }
-  }
-
-  async function handleDeleteImage(imageId: number) {
-    if (!confirm('Delete this image?')) return;
-    setError('');
-    try {
-      await adminApi.deleteStepImage(imageId);
-      load();
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete image');
-    }
-  }
-
   async function deleteStep() {
     if (!selectedStep) return;
     if (!confirm(`Delete step "${selectedStep.title}"?`)) return;
@@ -201,7 +158,7 @@ export default function GuideEditPage() {
         body: '',
       });
       setSelectedStepId(res.step.id);
-      setStepForm({ title: res.step.title, body: '', image_alt: '' });
+      setStepForm({ title: res.step.title, body: '' });
       load();
     } catch (err: any) {
       setError(err.message || 'Failed to add step');
@@ -329,9 +286,6 @@ export default function GuideEditPage() {
                     {step.title}
                   </div>
                 </div>
-                {step.image_url && (
-                  <div style={{ width: 16, height: 16, borderRadius: 3, background: 'var(--accent-1)', opacity: 0.6 }} />
-                )}
               </div>
             ))}
           </div>
@@ -355,88 +309,6 @@ export default function GuideEditPage() {
                   <textarea value={stepForm.body} onChange={(e) => setStepForm({ ...stepForm, body: e.target.value })} rows={4}
                     style={{ padding: '0.6rem', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', resize: 'vertical' }} />
                 </label>
-                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                  <span className="muted" style={{ fontSize: '0.8rem' }}>Image alt text</span>
-                  <input value={stepForm.image_alt} onChange={(e) => setStepForm({ ...stepForm, image_alt: e.target.value })}
-                    style={{ padding: '0.6rem', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)' }} />
-                </label>
-
-                {/* Images */}
-                <div>
-                  <div className="muted" style={{ fontSize: '0.8rem', marginBottom: '0.75rem' }}>Screenshots</div>
-
-                  {selectedStep.images && selectedStep.images.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                      {selectedStep.images.map((img) => (
-                        <div key={img.id} style={{ position: 'relative' }}>
-                          <button
-                            onClick={() => handleDeleteImage(img.id)}
-                            style={{
-                              position: 'absolute',
-                              top: 8,
-                              right: 8,
-                              zIndex: 1,
-                              width: 28,
-                              height: 28,
-                              borderRadius: '50%',
-                              background: 'rgba(0,0,0,0.6)',
-                              border: 'none',
-                              color: '#fff',
-                              fontSize: '1rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              opacity: 0.8,
-                              transition: 'all 0.15s',
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = '#ef4444';
-                              e.currentTarget.style.opacity = '1';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'rgba(0,0,0,0.6)';
-                              e.currentTarget.style.opacity = '0.8';
-                            }}
-                            title="Remove image"
-                          >
-                            ✕
-                          </button>
-                          <img
-                            src={`${process.env.NEXT_PUBLIC_API_URL}${img.url}`}
-                            alt={img.alt}
-                            style={{
-                              width: '100%',
-                              maxWidth: 360,
-                              borderRadius: 8,
-                              border: '1px solid var(--border)',
-                              display: 'block',
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div
-                      style={{
-                        padding: '1.5rem',
-                        textAlign: 'center',
-                        background: 'var(--surface-2)',
-                        borderRadius: 8,
-                        border: '1px dashed var(--border)',
-                        marginBottom: '0.75rem',
-                      }}
-                    >
-                      <span className="muted" style={{ fontSize: '0.85rem' }}>No images yet</span>
-                    </div>
-                  )}
-
-                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: 6, border: '1px solid var(--border-active)', background: 'var(--surface-2)', fontSize: '0.85rem', cursor: 'pointer' }}>
-                    📷 {uploading ? 'Uploading…' : (selectedStep.images && selectedStep.images.length > 0 ? 'Add another image' : 'Upload image')}
-                    <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImageUpload} style={{ display: 'none' }} disabled={uploading} />
-                  </label>
-                  <span className="muted" style={{ fontSize: '0.75rem', marginLeft: '0.75rem' }}>PNG/JPEG/WebP, max 5 MB</span>
-                </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', marginTop: '0.5rem' }}>
                   <button
