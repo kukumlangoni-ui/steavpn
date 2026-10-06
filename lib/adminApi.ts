@@ -82,4 +82,33 @@ export const adminApi = {
       method: 'POST',
       body: JSON.stringify({ device_id: deviceId, order }),
     }),
+
+  // Payment settings
+  getPaymentSettings: () =>
+    request<{ ok: boolean; settings: any }>('/api/payment-settings'),
+
+  updatePaymentSettings: (data: Record<string, unknown>) =>
+    request<{ ok: boolean; settings: any }>(
+      '/api/admin/payment-settings',
+      { method: 'POST', body: JSON.stringify(data) }
+    ),
+
+  uploadPaymentQR: async (slot: 'wechat' | 'alipay', file: File) => {
+    const fd = new FormData();
+    fd.append('slot', slot);
+    fd.append('file', file);
+    const res = await fetch(`${SITE.apiBase}/api/admin/payment-qr/upload`, {
+      method: 'POST',
+      credentials: 'include',
+      body: fd,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    return data as { ok: boolean; url: string };
+  },
+
+  deletePaymentQR: (slot: 'wechat' | 'alipay') =>
+    request<{ ok: boolean }>(`/api/admin/payment-qr/${slot}`, {
+      method: 'DELETE',
+    }),
 };

@@ -196,6 +196,54 @@ export default {
       return json({ ok: true, admin }, 200, cors(origin));
     }
 
+    // ─── Payment settings: public endpoints ───────────────────────────
+
+    if (url.pathname === '/api/payment-settings' && request.method === 'GET') {
+      const row = await env.DB
+        .prepare('SELECT * FROM payment_settings WHERE id = 1')
+        .first();
+
+      if (!row) {
+        return json({ error: 'Payment settings not found' }, 404, cors(origin));
+      }
+
+      const settings = {
+        wechat_id: row.wechat_id,
+        whatsapp: row.whatsapp,
+        email: row.email,
+        alipay_id: row.alipay_id,
+        bank_name: row.bank_name,
+        bank_account_name: row.bank_account_name,
+        bank_account_number: row.bank_account_number,
+        wechat_qr_url: row.wechat_qr_key ? '/api/payment-qr/wechat' : null,
+        alipay_qr_url: row.alipay_qr_key ? '/api/payment-qr/alipay' : null,
+      };
+
+      return json({ ok: true, settings }, 200, cors(origin));
+    }
+
+    const qrMatch = url.pathname.match(/^\/api\/payment-qr\/(wechat|alipay)$/);
+    if (qrMatch && request.method === 'GET') {
+      const slot = qrMatch[1];
+      const col = slot === 'wechat' ? 'wechat_qr_key' : 'alipay_qr_key';
+      const row = await env.DB
+        .prepare(`SELECT ${col} as qr_key FROM payment_settings WHERE id = 1`)
+        .first<{ qr_key: string | null }>();
+
+      if (!row?.qr_key) {
+        return new Response('Not found', { status: 404, headers: cors(origin) });
+      }
+
+      const obj = await env.GUIDE_IMAGES.get(row.qr_key);
+      if (!obj) return new Response('Not found', { status: 404, headers: cors(origin) });
+
+      const headers = new Headers();
+      headers.set('Content-Type', obj.httpMetadata?.contentType || 'image/png');
+      headers.set('Cache-Control', 'public, max-age=300');
+      Object.entries(cors(origin)).forEach(([k, v]) => headers.set(k, v));
+      return new Response(obj.body as unknown as BodyInit, { status: 200, headers });
+    }
+
     // ─── Protected admin endpoints ──────────────────────────────────────
 
     const admin = await getAdminFromSession(request, env);
@@ -706,6 +754,124 @@ export default {
       for (let i = 0; i < body.order.length; i++) {
         await stmt.bind(i + 1, body.order[i]).run();
       }
+
+      return json({ ok: true }, 200, cors(origin));
+    }
+
+    // ─── Payment settings: admin endpoints ────────────────────────────
+
+    if (url.pathname === '/api/admin/payment-settings' && request.method === 'POST') {
+      const body = await request.json().catch(() => null) as Record<string, unknown> | null;
+      if (!body) return json({ error: 'Invalid body' }, 400, cors(origin));
+
+      const allowedFields = [
+        'wechat_id', 'whatsapp', 'email', 'alipay_id',
+        'bank_name', 'bank_account_name', 'bank_account_number',
+      ];
+
+      const sets: string[] = [];
+      const vals: unknown[] = [];
+
+      for (const field of allowedFields) {
+        if (body[field] !== undefined) {
+          sets.push(`${field} = ?`);
+          vals.push(body[field]);
+        }
+      }
+
+      if (sets.length > 0) {
+        vals.push(1); // id = 1
+        await env.DB
+          .prepare(`UPDATE payment_settings SET ${sets.join(', ')}, updated_at = datetime('now') WHERE id = ?`)
+          .bind(...vals)
+          .run();
+      }
+
+      const row = await env.DB
+        .prepare('SELECT * FROM payment_settings WHERE id = 1')
+        .first();
+
+      const settings = {
+        wechat_id: row?.wechat_id,
+        whatsapp: row?.whatsapp,
+        email: row?.email,
+        alipay_id: row?.alipay_id,
+        bank_name: row?.bank_name,
+        bank_account_name: row?.bank_account_name,
+        bank_account_number: row?.bank_account_number,
+        wechat_qr_url: row?.wechat_qr_key ? '/api/payment-qr/wechat' : null,
+        alipay_qr_url: row?.alipay_qr_key ? '/api/payment-qr/alipay' : null,
+      };
+
+      return json({ ok: true, settings }, 200, cors(origin));
+    }
+
+    if (url.pathname === '/api/admin/payment-qr/upload' && request.method === 'POST') {
+      const formData = await request.formData();
+      const slot = formData.get('slot') as string | null;
+      const file = formData.get('file') as File | null;
+
+      if (!slot || (slot !== 'wechat' && slot !== 'alipay')) {
+        return json({ error: 'slot must be "wechat" or "alipay"' }, 400, cors(origin));
+      }
+      if (!file) return json({ error: 'file is required' }, 400, cors(origin));
+
+      // Validate file type and size
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        return json({ error: 'Only PNG, JPEG, and WebP images are allowed' }, 400, cors(origin));
+      }
+      const maxSize = 2 * 1024 * 1024; // 2 MB
+      if (file.size > maxSize) {
+        return json({ error: 'Image must be under 2 MB' }, 400, cors(origin));
+      }
+
+      const ext = file.type === 'image/png' ? 'png' : file.type === 'image/jpeg' ? 'jpg' : 'webp';
+      const key = `payment/${slot}-qr.${ext}`;
+      const col = slot === 'wechat' ? 'wechat_qr_key' : 'alipay_qr_key';
+
+      // Delete old image if present
+      const oldRow = await env.DB
+        .prepare(`SELECT ${col} as old_key FROM payment_settings WHERE id = 1`)
+        .first<{ old_key: string | null }>();
+      if (oldRow?.old_key && oldRow.old_key !== key) {
+        await env.GUIDE_IMAGES.delete(oldRow.old_key);
+      }
+
+      // Upload to R2
+      const arrayBuffer = await file.arrayBuffer();
+      await env.GUIDE_IMAGES.put(key, arrayBuffer, {
+        httpMetadata: { contentType: file.type },
+      });
+
+      // Update settings
+      await env.DB
+        .prepare(`UPDATE payment_settings SET ${col} = ?, updated_at = datetime('now') WHERE id = 1`)
+        .bind(key)
+        .run();
+
+      return json({
+        ok: true,
+        url: `/api/payment-qr/${slot}`,
+      }, 200, cors(origin));
+    }
+
+    const qrDeleteMatch = url.pathname.match(/^\/api\/admin\/payment-qr\/(wechat|alipay)$/);
+    if (qrDeleteMatch && request.method === 'DELETE') {
+      const slot = qrDeleteMatch[1];
+      const col = slot === 'wechat' ? 'wechat_qr_key' : 'alipay_qr_key';
+
+      const row = await env.DB
+        .prepare(`SELECT ${col} as qr_key FROM payment_settings WHERE id = 1`)
+        .first<{ qr_key: string | null }>();
+
+      if (row?.qr_key) {
+        await env.GUIDE_IMAGES.delete(row.qr_key);
+      }
+
+      await env.DB
+        .prepare(`UPDATE payment_settings SET ${col} = NULL, updated_at = datetime('now') WHERE id = 1`)
+        .run();
 
       return json({ ok: true }, 200, cors(origin));
     }
