@@ -529,6 +529,7 @@ export default {
           download_url: device.download_url,
           intro: device.intro,
           steps: steps.results.map((s) => ({
+            id: s.id,
             step_number: s.step_number,
             title: s.title,
             body: s.body,
