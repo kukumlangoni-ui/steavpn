@@ -167,7 +167,8 @@ function PaySkeleton() {
 export default function PayPage() {
   const [planId, setPlanId] = useState<string | null>(null);
   const [settings, setSettings] = useState<PaymentSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
+  const [loadError, setLoadError] = useState<string>("");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -175,19 +176,71 @@ export default function PayPage() {
   }, []);
 
   useEffect(() => {
-    fetch(`${SITE.apiBase}/api/payment-settings`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.ok) setSettings(data.settings);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    let attempt = 0;
+    const MAX_ATTEMPTS = 3;
+
+    async function load() {
+      attempt++;
+      try {
+        const res = await fetch(
+          `${SITE.apiBase}/api/payment-settings?_t=${Date.now()}`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (cancelled) return;
+        if (data.ok) {
+          setSettings(data.settings);
+          setLoadState("ready");
+        } else {
+          throw new Error("Invalid response");
+        }
+      } catch (err) {
+        if (cancelled) return;
+        if (attempt < MAX_ATTEMPTS) {
+          setTimeout(load, 500 * attempt);
+        } else {
+          setLoadError("Couldn't reach the server. Check your connection and try again.");
+          setLoadState("error");
+        }
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   const plan = planId ? getPlan(planId) : undefined;
 
-  if (planId === null || loading) {
+  if (planId === null || loadState === "loading") {
     return <PaySkeleton />;
+  }
+
+  if (loadState === "error") {
+    return (
+      <div className="container" style={{ padding: "4rem 1.25rem 6rem", maxWidth: 560, textAlign: "center" }}>
+        <div style={{
+          padding: "2rem",
+          border: "1px solid rgba(229,101,101,0.3)",
+          borderRadius: 12,
+          background: "rgba(229,101,101,0.05)",
+        }}>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.75rem" }}>
+            Connection error
+          </h1>
+          <p className="muted" style={{ marginBottom: "1.5rem", lineHeight: 1.6 }}>
+            {loadError}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="btn-primary"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!plan) {

@@ -181,21 +181,43 @@ function StepSkeleton() {
 export default function GuidePage() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [state, setState] = useState<"loading" | "ready" | "error">("loading");
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`${SITE.apiBase}/api/guide`)
-      .then((r) => r.json())
-      .then((data) => {
+    let cancelled = false;
+    let attempt = 0;
+    const MAX_ATTEMPTS = 3;
+
+    async function load() {
+      attempt++;
+      try {
+        const res = await fetch(
+          `${SITE.apiBase}/api/guide?_t=${Date.now()}`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (cancelled) return;
         setDevices(data.devices || []);
-        if (data.devices?.length && !activeSlug) {
-          setActiveSlug(data.devices[0].slug);
+        if (data.devices?.length) {
+          setActiveSlug((prev) => prev || data.devices[0].slug);
         }
-      })
-      .catch(() => setError("Failed to load guide"))
-      .finally(() => setLoading(false));
+        setState("ready");
+      } catch (err) {
+        if (cancelled) return;
+        if (attempt < MAX_ATTEMPTS) {
+          // Exponential backoff: 500ms, 1500ms
+          setTimeout(load, 500 * attempt);
+        } else {
+          setError("Couldn't reach the server. Check your connection and try again.");
+          setState("error");
+        }
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   const activeDevice = devices.find((d) => d.slug === activeSlug) || null;
@@ -388,7 +410,7 @@ export default function GuidePage() {
 
       {/* Device picker */}
       <div className="device-tabs">
-        {loading
+        {state === "loading"
           ? [1, 2, 3].map((i) => (
               <button key={i} className="device-tab" disabled style={{ opacity: 0.5 }}>
                 Loading…
@@ -408,24 +430,8 @@ export default function GuidePage() {
             })}
       </div>
 
-      {error && (
-        <div
-          style={{
-            padding: "1rem",
-            textAlign: "center",
-            background: "rgba(239, 68, 68, 0.1)",
-            border: "1px solid #ef4444",
-            borderRadius: 8,
-            color: "#ef4444",
-            marginBottom: "1.5rem",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
       {/* Device info + steps */}
-      {loading ? (
+      {state === "loading" ? (
         <div>
           <DeviceCardSkeleton />
           <div style={{ height: 56, marginBottom: "1.5rem", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, animation: "pulse 1.5s ease-in-out infinite", animationDelay: "0.25s" }} />
@@ -510,6 +516,22 @@ export default function GuidePage() {
             </div>
           </div>
         </>
+      ) : state === "error" ? (
+        <div style={{
+          padding: "2rem",
+          border: "1px solid rgba(229,101,101,0.3)",
+          borderRadius: 12,
+          background: "rgba(229,101,101,0.05)",
+          textAlign: "center",
+        }}>
+          <p style={{ marginBottom: "1rem" }}>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="btn-primary"
+          >
+            Try again
+          </button>
+        </div>
       ) : null}
     </div>
   );
