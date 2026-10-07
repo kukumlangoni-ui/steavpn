@@ -1,0 +1,409 @@
+/* ==========================================================================
+   STEA VPN — HERO STYLES (scoped, no Tailwind dependency)
+   Ported from the old repo globals.css. Only styles needed by HomeHero.
+   ========================================================================== */
+
+:root {
+  --stea-primary: #E88A1E;
+  --stea-primary-dark: #D97706;
+  --stea-primary-hover: #F59E0B;
+  --stea-text-primary: #1A1A2E;
+  --stea-text-secondary: #4A4A5A;
+  --stea-text-light: #8A8A9A;
+  --stea-bg-primary: #FAFAFA;
+  --stea-bg-secondary: #F5F6F8;
+  --stea-border: #E8E8EE;
+  --stea-border-subtle: rgba(232, 232, 238, 0.65);
+  --stea-border-hover: rgba(232, 138, 30, 0.40);
+  --stea-connected: #22C55E;
+  --stea-secure: #3B82F6;
+  --stea-warning: #F59E0B;
+  --stea-easing: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- Rotating location word ---- */
+
+.hero-location-rotator {
+  position: relative;
+  display: block;
+  min-height: 1.02em;
+  overflow: hidden;
+  contain: layout paint;
+}
+.hero-location-word {
+  position: absolute;
+  inset: 0 auto auto 0;
+  opacity: 0;
+  transform: translateY(0.28em);
+  animation: stea-location-rotate 11s var(--stea-easing) infinite;
+  white-space: nowrap;
+}
+.stea-hero-location-gradient {
+  background-image: linear-gradient(100deg, #ff3d22 0%, #e88a1e 48%, #ffb23f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 18px 42px rgba(232, 80, 30, 0.24));
+}
+@keyframes stea-location-rotate {
+  0% { opacity: 0; transform: translateY(0.28em); }
+  5%, 16% { opacity: 1; transform: translateY(0); }
+  21%, 100% { opacity: 0; transform: translateY(-0.26em); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-location-word { animation: none; }
+  .hero-location-word:first-child { opacity: 1; transform: none; }
+}
+
+/* ---- Crisp image rendering for slideshow ---- */
+
+.crisp-image {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* ---- Button base ---- */
+
+.btn-stea {
+  transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.btn-stea:hover {
+  transform: translateY(-1px) scale(1.01);
+}
+.btn-stea:active {
+  transform: translateY(0) scale(0.995);
+}
+
+/* ---- Gradient mesh background ---- */
+
+@keyframes stea-gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.stea-gradient-mesh {
+  background: linear-gradient(
+    120deg,
+    rgba(26, 26, 46, 0.04) 0%,
+    rgba(99, 102, 241, 0.06) 25%,
+    rgba(232, 138, 30, 0.08) 50%,
+    rgba(99, 102, 241, 0.06) 75%,
+    rgba(26, 26, 46, 0.04) 100%
+  );
+  background-size: 300% 300%;
+  animation: stea-gradient-shift 10s ease-in-out infinite;
+}
+
+/* ---- Ping animations ---- */
+
+@keyframes stea-ping-slow {
+  0% { transform: scale(1); opacity: 0.55; }
+  80%, 100% { transform: scale(2.2); opacity: 0; }
+}
+.animate-ping-slow {
+  animation: stea-ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes stea-ping-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.45); opacity: 0.5; }
+}
+.animate-ping-dot {
+  animation: stea-ping-dot 1.6s ease-in-out infinite;
+}
+
+/* ---- Primary gradient ---- */
+
+.stea-primary-gradient {
+  background-image: linear-gradient(135deg, #E88A1E 0%, #F59E0B 100%);
+}
+
+/* ---- Glass card ---- */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(10, 10, 26, 0.06);
+}
+
+/* ---- Text / border color utilities ---- */
+
+.text-stea-text-primary { color: var(--stea-text-primary); }
+.text-stea-text-secondary { color: var(--stea-text-secondary); }
+.text-stea-text-light { color: var(--stea-text-light); }
+.text-stea-primary { color: var(--stea-primary); }
+.text-stea-connected { color: var(--stea-connected); }
+.text-stea-secure { color: var(--stea-secure); }
+.text-stea-warning { color: var(--stea-warning); }
+
+.border-stea-border { border-color: var(--stea-border); }
+.border-stea-border-subtle { border-color: var(--stea-border-subtle); }
+
+.bg-stea-bg-primary { background-color: var(--stea-bg-primary); }
+.bg-stea-bg-secondary { background-color: var(--stea-bg-secondary); }
+
+.bg-stea-primary\/10 { background-color: rgba(232, 138, 30, 0.10); }
+.bg-stea-connected\/10 { background-color: rgba(34, 197, 94, 0.10); }
+.bg-stea-secure\/10 { background-color: rgba(59, 130, 246, 0.10); }
+.bg-stea-warning\/10 { background-color: rgba(245, 158, 11, 0.10); }
+
+.border-stea-primary\/25 { border-color: rgba(232, 138, 30, 0.25); }
+.border-stea-connected\/25 { border-color: rgba(34, 197, 94, 0.25); }
+.border-stea-secure\/25 { border-color: rgba(59, 130, 246, 0.25); }
+.border-stea-warning\/25 { border-color: rgba(245, 158, 11, 0.25); }
+
+.bg-stea-primary\/15 { background-color: rgba(232, 138, 30, 0.15); }
+
+.text-stea-primary\/12 { color: rgba(232, 138, 30, 0.12); }
+
+/* ---- Shadow utilities ---- */
+
+.shadow-stea-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.shadow-stea-md {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.shadow-stea-lg {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+}
+.shadow-stea-xl {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+.shadow-stea-glow {
+  box-shadow: 0 0 0 6px rgba(232, 138, 30, 0.08),
+    0 10px 40px rgba(232, 138, 30, 0.22);
+}
+
+/* ---- Rounded utilities ---- */
+
+.rounded-stea-lg {
+  border-radius: 16px;
+}
+
+/* ---- Line clamp ---- */
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---- Tabular nums ---- */
+
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+/* ==========================================================================
+   DARK HERO OVERRIDES
+   Everything below scopes to .stea-vpn-dark-hero
+   ========================================================================== */
+
+.stea-vpn-dark-hero {
+  --hero-bg: #060816;
+  --hero-bg-deep: #030510;
+  --hero-panel: rgba(17, 20, 37, 0.72);
+  --hero-panel-strong: rgba(20, 23, 42, 0.90);
+  --hero-line: rgba(255,255,255,.085);
+  --hero-line-soft: rgba(255,255,255,.045);
+  --hero-text: #f7f8fc;
+  --hero-muted: #969bad;
+
+  background:
+    radial-gradient(
+      900px 560px at 82% 18%,
+      rgba(232,138,30,.10),
+      transparent 62%
+    ),
+    radial-gradient(
+      820px 520px at 8% 72%,
+      rgba(45,94,255,.07),
+      transparent 65%
+    ),
+    linear-gradient(
+      135deg,
+      var(--hero-bg-deep) 0%,
+      var(--hero-bg) 48%,
+      #080714 100%
+    );
+
+  color: var(--hero-text);
+  isolation: isolate;
+}
+
+/* Grid texture */
+.stea-vpn-dark-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.026) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.92),
+    rgba(0,0,0,.58) 72%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.92),
+    rgba(0,0,0,.58) 72%,
+    transparent
+  );
+}
+
+/* Top atmosphere glow */
+.stea-vpn-dark-hero::after {
+  content: "";
+  position: absolute;
+  width: min(68vw, 980px);
+  aspect-ratio: 1;
+  right: -25%;
+  top: -65%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(232,138,30,.09),
+    rgba(232,138,30,.025) 38%,
+    transparent 68%
+  );
+  filter: blur(30px);
+}
+
+/* Gradient mesh inside dark hero */
+.stea-vpn-dark-hero .stea-gradient-mesh {
+  opacity: .18 !important;
+  mix-blend-mode: screen;
+}
+
+/* Typography in dark hero */
+.stea-vpn-dark-hero h1 {
+  color: var(--hero-text) !important;
+  text-shadow: 0 2px 28px rgba(0,0,0,.28);
+}
+.stea-vpn-dark-hero .text-stea-text-primary {
+  color: var(--hero-text) !important;
+}
+.stea-vpn-dark-hero .text-stea-text-secondary {
+  color: var(--hero-muted) !important;
+}
+.stea-vpn-dark-hero .text-stea-text-light {
+  color: #757b90 !important;
+}
+
+/* Glass cards in dark hero */
+.stea-vpn-dark-hero .glass-card {
+  background: linear-gradient(
+    145deg,
+    rgba(23,26,46,.83),
+    rgba(12,15,29,.74)
+  ) !important;
+  border-color: var(--hero-line) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 18px 60px rgba(0,0,0,.24) !important;
+  backdrop-filter: blur(18px) saturate(120%);
+}
+.stea-vpn-dark-hero .glass-card:hover {
+  border-color: rgba(232,138,30,.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 22px 70px rgba(0,0,0,.34),
+    0 0 34px rgba(232,138,30,.055) !important;
+}
+
+/* Slideshow frame in dark hero */
+.stea-vpn-dark-hero .hero-slideshow-frame {
+  background: linear-gradient(
+    145deg,
+    rgba(18,21,38,.94),
+    rgba(7,9,20,.96)
+  ) !important;
+  border-color: rgba(255,255,255,.09) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 34px 100px rgba(0,0,0,.44),
+    0 0 70px rgba(232,138,30,.055) !important;
+}
+
+/* Slideshow status badge */
+.stea-vpn-dark-hero .hero-slide-badge {
+  background: rgba(10,13,27,.84) !important;
+  border-color: rgba(255,255,255,.10) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 8px 30px rgba(0,0,0,.24) !important;
+}
+
+/* Slideshow pagination dots */
+.stea-vpn-dark-hero .hero-slide-dots {
+  background: rgba(11,14,28,.78) !important;
+  border-color: rgba(255,255,255,.09) !important;
+}
+
+/* Secondary CTA button (outlined) */
+.stea-vpn-dark-hero .hero-btn-secondary {
+  background: rgba(255,255,255,.055) !important;
+  color: #f6f7fb !important;
+  border-color: rgba(255,255,255,.12) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 10px 30px rgba(0,0,0,.18) !important;
+}
+.stea-vpn-dark-hero .hero-btn-secondary:hover {
+  background: rgba(255,255,255,.09) !important;
+  border-color: rgba(232,138,30,.30) !important;
+}
+
+/* Trust chips */
+.stea-vpn-dark-hero .hero-trust-chip {
+  background: rgba(13,16,31,.68) !important;
+  color: var(--hero-muted) !important;
+  border-color: rgba(255,255,255,.075) !important;
+}
+
+/* Connection card border */
+.stea-vpn-dark-hero .hero-connection-card {
+  border-color: rgba(255,255,255,.085) !important;
+}
+
+/* Network lines */
+.stea-vpn-dark-hero svg line {
+  stroke: rgba(232,138,30,.14);
+}
+
+/* Bottom handoff gradient */
+.stea-vpn-dark-hero .hero-bottom-fade {
+  background: linear-gradient(to bottom, transparent, #060816) !important;
+}
+
+/* Mobile: tighter grid */
+@media (max-width: 760px) {
+  .stea-vpn-dark-hero::before {
+    background-size: 30px 30px;
+  }
+}
