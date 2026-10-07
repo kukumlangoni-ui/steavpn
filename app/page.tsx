@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 const STEPS = [
@@ -43,14 +42,16 @@ export default function HomePage() {
       <section className="brands-section">
         <p className="brands-label">WORKS WITH</p>
         <div className="brands-image-wrap">
-          <Image
-            src="/hero/social.png"
-            alt="Supported services"
-            width={1440}
-            height={320}
-            priority
-            style={{ width: "100%", height: "auto", objectFit: "contain" }}
-          />
+          <picture>
+            <source srcSet="/hero/social.webp" type="image/webp" />
+            <img
+              src="/hero/social.png"
+              alt="Supported services"
+              width={1440}
+              height={320}
+              style={{ width: "100%", height: "auto", objectFit: "contain" }}
+            />
+          </picture>
         </div>
       </section>
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import CopyButton from "@/components/CopyButton";
 import {
   getPlan,
   formatCNY,
@@ -20,54 +21,6 @@ type PaymentSettings = {
   wechat_qr_url: string | null;
   alipay_qr_url: string | null;
 };
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  return (
-    <button
-      onClick={handleCopy}
-      style={{
-        padding: "0.4rem 0.8rem",
-        borderRadius: 6,
-        background: "var(--surface-2)",
-        border: "1px solid var(--border-active)",
-        color: "var(--text-muted)",
-        fontSize: "0.8rem",
-        fontWeight: 500,
-        cursor: "pointer",
-        transition: "all 0.15s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "var(--accent-1)";
-        e.currentTarget.style.color = "var(--accent-1)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "var(--border-active)";
-        e.currentTarget.style.color = "var(--text-muted)";
-      }}
-    >
-      {copied ? "✓ Copied" : "Copy"}
-    </button>
-  );
-}
 
 function QrImage({
   src,
@@ -119,6 +72,98 @@ function QrImage({
   );
 }
 
+function PaySkeleton() {
+  return (
+    <div className="container" style={{ padding: "4rem 1.25rem 6rem", maxWidth: 720 }}>
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.75; }
+        }
+        .skel { background: var(--surface-2); border-radius: 4px; animation: pulse 1.5s ease-in-out infinite; }
+      `}</style>
+
+      {/* Header + plan summary card */}
+      <div style={{ marginBottom: "2.5rem" }}>
+        <div className="skel" style={{ height: 36, width: "60%", marginBottom: "1rem" }} />
+        <div className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+          <div style={{ flex: 1, minWidth: 150 }}>
+            <div className="skel" style={{ height: 20, width: "50%", marginBottom: "0.5rem" }} />
+            <div className="skel" style={{ height: 14, width: "70%" }} />
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div className="skel" style={{ height: 32, width: 80 }} />
+          </div>
+        </div>
+      </div>
+
+      {/* WeChat section skeleton */}
+      <div className="card" style={{ marginBottom: "1.5rem" }}>
+        <div className="skel" style={{ height: 24, width: "35%", marginBottom: "1rem" }} />
+        <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", alignItems: "flex-start" }}>
+          <div className="skel" style={{ width: 180, height: 180, borderRadius: 8 }} />
+          <div style={{ flex: 1, minWidth: 200, display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <div className="skel" style={{ height: 14, width: "80%" }} />
+            <div className="skel" style={{ height: 40, width: "100%", borderRadius: 8 }} />
+            <div className="skel" style={{ height: 12, width: "60%" }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Bank section skeleton */}
+      <div className="card" style={{ marginBottom: "1.5rem" }}>
+        <div className="skel" style={{ height: 24, width: "45%", marginBottom: "1rem" }} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0.75rem", marginBottom: "0.75rem" }}>
+          <div style={{ padding: "0.75rem 1rem", background: "var(--surface-2)", borderRadius: 8, border: "1px solid var(--border)" }}>
+            <div className="skel" style={{ height: 12, width: "30%", marginBottom: "0.4rem" }} />
+            <div className="skel" style={{ height: 16, width: "60%" }} />
+          </div>
+          <div style={{ padding: "0.75rem 1rem", background: "var(--surface-2)", borderRadius: 8, border: "1px solid var(--border)" }}>
+            <div className="skel" style={{ height: 12, width: "40%", marginBottom: "0.4rem" }} />
+            <div className="skel" style={{ height: 16, width: "70%" }} />
+          </div>
+          <div style={{ padding: "0.75rem 1rem", background: "var(--surface-2)", borderRadius: 8, border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem" }}>
+            <div>
+              <div className="skel" style={{ height: 12, width: 50, marginBottom: "0.4rem" }} />
+              <div className="skel" style={{ height: 16, width: 100 }} />
+            </div>
+            <div className="skel" style={{ width: 50, height: 28, borderRadius: 6 }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Alipay section skeleton */}
+      <div className="card" style={{ marginBottom: "2.5rem" }}>
+        <div className="skel" style={{ height: 24, width: "30%", marginBottom: "1rem" }} />
+        <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", alignItems: "flex-start" }}>
+          <div className="skel" style={{ width: 180, height: 180, borderRadius: 8 }} />
+          <div style={{ flex: 1, minWidth: 200, display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <div className="skel" style={{ height: 14, width: "70%" }} />
+            <div className="skel" style={{ height: 12, width: "50%" }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Send screenshot CTA skeleton */}
+      <div
+        className="card"
+        style={{
+          background: "linear-gradient(135deg, rgba(245, 158, 11, 0.04), rgba(232, 138, 30, 0.02))",
+          textAlign: "center",
+          padding: "2rem 1.5rem",
+        }}
+      >
+        <div className="skel" style={{ height: 28, width: "40%", margin: "0 auto 0.75rem", borderRadius: 4 }} />
+        <div className="skel" style={{ height: 14, width: "70%", margin: "0 auto 1.5rem", borderRadius: 4 }} />
+        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
+          <div className="skel" style={{ width: 160, height: 40, borderRadius: 8 }} />
+          <div className="skel" style={{ width: 160, height: 40, borderRadius: 8 }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PayPage() {
   const [planId, setPlanId] = useState<string | null>(null);
   const [settings, setSettings] = useState<PaymentSettings | null>(null);
@@ -142,13 +187,7 @@ export default function PayPage() {
   const plan = planId ? getPlan(planId) : undefined;
 
   if (planId === null || loading) {
-    return (
-      <div className="container" style={{ padding: "4rem 1.25rem 6rem", maxWidth: 560, textAlign: "center" }}>
-        <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: "1rem" }}>
-          Loading...
-        </h1>
-      </div>
-    );
+    return <PaySkeleton />;
   }
 
   if (!plan) {

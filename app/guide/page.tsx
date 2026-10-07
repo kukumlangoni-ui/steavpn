@@ -34,11 +34,14 @@ function DeviceIcon({ slug, appName }: { slug: string; appName: string }) {
 
   return (
     <div className="device-icon">
-      <img
-        src={`/clients/${slug}.png`}
-        alt={`${appName} icon`}
-        onError={() => setError(true)}
-      />
+      <picture>
+        <source srcSet={`/clients/${slug}.webp`} type="image/webp" />
+        <img
+          src={`/clients/${slug}.png`}
+          alt={`${appName} icon`}
+          onError={() => setError(true)}
+        />
+      </picture>
     </div>
   );
 }
@@ -90,6 +93,28 @@ function CopyRow({ url }: { url: string }) {
       >
         {copied ? "✓ Copied" : "Copy"}
       </button>
+    </div>
+  );
+}
+
+function DeviceCardSkeleton() {
+  return (
+    <div className="device-card" style={{ alignItems: "center" }}>
+      <div
+        style={{
+          width: 72,
+          height: 72,
+          borderRadius: 16,
+          background: "var(--surface-2)",
+          flexShrink: 0,
+          animation: "pulse 1.5s ease-in-out infinite",
+        }}
+      />
+      <div className="device-info" style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <div style={{ height: 24, width: "55%", background: "var(--surface-2)", borderRadius: 4, animation: "pulse 1.5s ease-in-out infinite" }} />
+        <div style={{ height: 14, width: "70%", background: "var(--surface-2)", borderRadius: 4, animation: "pulse 1.5s ease-in-out infinite", animationDelay: "0.1s" }} />
+      </div>
+      <div style={{ width: 120, height: 40, borderRadius: 8, background: "var(--surface-2)", flexShrink: 0, animation: "pulse 1.5s ease-in-out infinite", animationDelay: "0.2s" }} />
     </div>
   );
 }
@@ -242,8 +267,10 @@ export default function GuidePage() {
           display: flex;
           align-items: center;
           justify-content: center;
+          padding: 12px;
+          box-sizing: border-box;
         }
-        .device-icon img { width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box; }
+        .device-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
         .device-info { flex: 1; min-width: 0; }
         .device-app { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.25rem; }
         .device-name { color: var(--text-muted, #a1a1aa); font-size: 0.9rem; margin: 0; }
@@ -402,6 +429,9 @@ export default function GuidePage() {
       {/* Device info + steps */}
       {loading ? (
         <div>
+          <DeviceCardSkeleton />
+          <div style={{ height: 56, marginBottom: "1.5rem", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, animation: "pulse 1.5s ease-in-out infinite", animationDelay: "0.25s" }} />
+          <div style={{ height: 80, marginBottom: "2rem", background: "rgba(245,158,11,0.04)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: 12, animation: "pulse 1.5s ease-in-out infinite", animationDelay: "0.35s" }} />
           <StepSkeleton />
           <StepSkeleton />
           <StepSkeleton />
