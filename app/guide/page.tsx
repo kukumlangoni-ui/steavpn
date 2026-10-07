@@ -267,10 +267,8 @@ export default function GuidePage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 12px;
-          box-sizing: border-box;
         }
-        .device-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .device-icon img { width: 72px; height: 72px; object-fit: contain; display: block; }
         .device-info { flex: 1; min-width: 0; }
         .device-app { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.25rem; }
         .device-name { color: var(--text-muted, #a1a1aa); font-size: 0.9rem; margin: 0; }
