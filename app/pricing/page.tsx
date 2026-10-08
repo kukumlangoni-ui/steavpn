@@ -318,9 +318,35 @@ export default function PricingPage() {
               >
                 You selected
               </div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>
-                {selectedPlan.name} · {formatCNY(selectedPlan.cny)} ·{' '}
-                {selectedPlan.duration}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>
+                  {selectedPlan.name}
+                </div>
+                <div
+                  style={{
+                    fontSize: '0.95rem',
+                    fontWeight: 600,
+                    color: 'rgba(255,255,255,0.85)',
+                  }}
+                >
+                  {formatCNY(selectedPlan.cny)} · {selectedPlan.duration}
+                </div>
+                <div
+                  style={{
+                    fontSize: '0.85rem',
+                    color: 'rgba(255,255,255,0.6)',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '0.35rem 0.5rem',
+                    marginTop: '0.15rem',
+                  }}
+                >
+                  <span>{formatTZS(selectedPlan.tzs)}</span>
+                  <span style={{ opacity: 0.4 }}>·</span>
+                  <span>{formatAED(selectedPlan.aed)}</span>
+                  <span style={{ opacity: 0.4 }}>·</span>
+                  <span>{formatUSD(selectedPlan.usd)}</span>
+                </div>
               </div>
             </div>
             <div
