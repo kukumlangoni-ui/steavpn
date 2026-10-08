@@ -21,7 +21,7 @@ export default function Header() {
             STEA <span className="accent">VPN</span>
           </span>
         </Link>
-        <nav style={{ display: "flex", gap: "0.25rem" }}>
+        <nav className="hidden sm:flex" style={{ gap: "0.25rem" }}>
           {NAV.map((item) => (
             <Link
               key={item.href}

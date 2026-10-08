@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 import { SITE } from "@/lib/config";
 
@@ -21,10 +22,22 @@ export const metadata: Metadata = {
   description: SITE.tagline,
   metadataBase: new URL(`https://${SITE.domain}`),
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180" },
+    ],
+    shortcut: "/favicon.ico",
   },
   manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "STEA VPN",
+  },
 };
 
 export const viewport: Viewport = {
@@ -45,6 +58,7 @@ export default function RootLayout({
         <Header />
         <main style={{ minHeight: "70vh" }}>{children}</main>
         <Footer />
+        <MobileBottomNav />
       </body>
     </html>
   );

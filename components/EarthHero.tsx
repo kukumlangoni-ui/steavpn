@@ -85,23 +85,23 @@ export default function EarthHero() {
       />
 
       <div
-        className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-3 px-4 pb-4 pt-5 sm:gap-6 sm:px-6 sm:py-8 md:py-10 lg:grid-cols-[42%_14%_44%] lg:gap-4 lg:px-8 lg:py-14"
+        className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-2 px-3 pb-3 pt-4 sm:gap-6 sm:px-6 sm:py-8 md:py-10 lg:grid-cols-[42%_14%_44%] lg:gap-4 lg:px-8 lg:py-14"
         style={{ minHeight: 'calc(100svh - 56px)' }}
       >
         {/* Copy + primary CTA. Always the top layer. */}
         <div className="relative z-20 mx-auto w-full max-w-[620px] text-center lg:mx-0 lg:text-left">
           <h1 className="font-extrabold tracking-normal text-white">
-            <span className="block whitespace-nowrap text-[clamp(27px,8.1vw,36px)] leading-none sm:text-7xl sm:leading-[0.92] lg:text-[82px] xl:text-[88px]">
+            <span className="block whitespace-nowrap text-[clamp(24px,7vw,36px)] leading-none sm:text-7xl sm:leading-[0.92] lg:text-[82px] xl:text-[88px]">
               <span className="sm:block">The VPN</span>{' '}
               <span className="sm:block">built for</span>
             </span>
-            <span className="relative mt-2 inline-block w-full max-w-full overflow-visible align-top sm:mt-4 md:mt-5 md:min-w-full md:justify-start h-[48px] sm:h-[56px] md:h-[72px] md:w-[560px] lg:h-[88px] lg:w-[660px] xl:h-[96px] xl:w-[720px]">
+            <span className="relative mt-1 inline-block w-full max-w-full overflow-visible align-top sm:mt-4 md:mt-5 md:min-w-full md:justify-start h-[40px] sm:h-[56px] md:h-[72px] md:w-[560px] lg:h-[88px] lg:w-[660px] xl:h-[96px] xl:w-[720px]">
               <motion.span
                 key={active.name}
                 initial={hasHydrated && !reducedMotion ? { opacity: 0, y: 10 } : false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: reducedMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-                className={`inline-flex w-full min-w-0 items-center justify-center gap-2 overflow-visible whitespace-nowrap bg-gradient-to-r from-[#ff4d2e] via-[#ff7a1a] to-[#ffc247] bg-clip-text text-[clamp(34px,9.5vw,46px)] font-extrabold leading-none tracking-normal text-transparent sm:text-[48px] md:w-max md:min-w-full md:justify-start md:gap-3 md:text-[60px] lg:text-[74px] xl:text-[82px] 2xl:text-[88px] ${longActiveName ? 'text-[clamp(31px,8.7vw,42px)] sm:text-[44px] md:text-[56px] lg:text-[68px] xl:text-[76px] 2xl:text-[82px]' : ''}`}
+                className={`inline-flex w-full min-w-0 items-center justify-center gap-2 overflow-visible whitespace-nowrap bg-gradient-to-r from-[#ff4d2e] via-[#ff7a1a] to-[#ffc247] bg-clip-text text-[clamp(28px,8vw,46px)] font-extrabold leading-none tracking-normal text-transparent sm:text-[48px] md:w-max md:min-w-full md:justify-start md:gap-3 md:text-[60px] lg:text-[74px] xl:text-[82px] 2xl:text-[88px] ${longActiveName ? 'text-[clamp(25px,7vw,42px)] sm:text-[44px] md:text-[56px] lg:text-[68px] xl:text-[76px] 2xl:text-[82px]' : ''}`}
               >
                 <span className="shrink-0 text-[0.72em] text-white md:text-[0.62em]" aria-hidden>
                   {active.flag}
@@ -118,17 +118,17 @@ export default function EarthHero() {
             Works where other VPNs may fail.
           </p>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 min-[340px]:flex min-[340px]:justify-center sm:mt-8 lg:justify-start">
+          <div className="mt-3 grid grid-cols-2 gap-2 min-[340px]:flex min-[340px]:justify-center sm:mt-8 lg:justify-start">
             <Link
               href="/pricing"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-stea-primary/30 bg-stea-primary/10 px-4 py-2.5 text-sm font-bold text-stea-primary transition hover:bg-stea-primary/15 sm:min-h-12 sm:px-5 sm:py-3"
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-stea-primary/30 bg-stea-primary/10 px-3 py-2 text-sm font-bold text-stea-primary transition hover:bg-stea-primary/15 sm:min-h-12 sm:px-5 sm:py-3"
             >
               VPN for China
             </Link>
 
             <Link
               href="/pricing"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-stea-primary px-4 py-2.5 text-sm font-bold text-white shadow-[0_18px_40px_rgba(232,138,30,0.25)] transition hover:bg-stea-primary-hover sm:min-h-12 sm:px-6 sm:py-3"
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-stea-primary px-3 py-2 text-sm font-bold text-white shadow-[0_18px_40px_rgba(232,138,30,0.25)] transition hover:bg-stea-primary-hover sm:min-h-12 sm:px-6 sm:py-3"
             >
               Get Started
               <ArrowRight size={16} />
@@ -136,7 +136,7 @@ export default function EarthHero() {
 
             <Link
               href="/pricing"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/15 bg-white/[0.045] px-4 py-2.5 text-sm font-bold text-white transition hover:border-white/28 hover:bg-white/[0.08] sm:min-h-12 sm:px-6 sm:py-3"
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/15 bg-white/[0.045] px-3 py-2 text-sm font-bold text-white transition hover:border-white/28 hover:bg-white/[0.08] sm:min-h-12 sm:px-6 sm:py-3"
             >
               View Plans
             </Link>
@@ -180,18 +180,19 @@ export default function EarthHero() {
             decoding="async"
             aria-hidden="true"
             className="pointer-events-none select-none relative h-auto max-w-none
-              w-[170px]
-              min-[340px]:w-[195px]
-              min-[375px]:w-[220px]
-              min-[390px]:w-[238px]
-              min-[430px]:w-[260px]
+              order-2 sm:order-1
+              mt-4 sm:mt-0
+              w-[150px]
+              min-[340px]:w-[170px]
+              min-[375px]:w-[190px]
+              min-[390px]:w-[210px]
+              min-[430px]:w-[240px]
               sm:w-[360px]
               md:w-[440px]
               lg:w-[520px]
               xl:w-[560px]
               object-contain
               opacity-[0.92]
-              max-[430px]:mt-2
               max-[430px]:opacity-[0.88]"
             animate={earthFloat}
             transition={{
@@ -203,11 +204,11 @@ export default function EarthHero() {
           <img
             src="/social-optimized.webp"
             alt="Supported social and streaming services"
-            loading="lazy"
-            fetchPriority="low"
+            loading="eager"
+            fetchPriority="high"
             decoding="async"
             aria-hidden="true"
-            className="pointer-events-none select-none mt-0 h-auto w-[min(92vw,360px)] object-contain sm:mt-3 sm:w-[520px] sm:max-w-[520px] lg:mt-4 lg:w-[560px] lg:max-w-[600px] xl:w-[600px]"
+            className="pointer-events-none select-none order-1 sm:order-2 h-auto w-[min(80vw,280px)] object-contain sm:mt-3 sm:w-[520px] sm:max-w-[520px] lg:mt-4 lg:w-[560px] lg:max-w-[600px] xl:w-[600px]"
           />
         </div>
       </div>

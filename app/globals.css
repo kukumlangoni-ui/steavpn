@@ -108,3 +108,10 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* Mobile bottom nav padding — prevent last section from being covered */
+@media (max-width: 639px) {
+  body {
+    padding-bottom: 96px;
+  }
+}
