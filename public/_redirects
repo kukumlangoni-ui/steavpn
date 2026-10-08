@@ -1,6 +1,2 @@
-# Redirect /pay and /pay/ to the default plan
-/pay    /pay/1month/    302
-/pay/   /pay/1month/    302
-
-# SPA fallback for any unmatched routes (serves 404)
-/*    /404.html    404
+/pay       /pay/1month/    302
+/pay/      /pay/1month/    302
