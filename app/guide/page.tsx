@@ -295,18 +295,17 @@ export default function GuidePage() {
             width: 0;
             height: 0;
           }
-          .device-tabs .device-tab {
-            flex: 0 0 auto;
+          .device-tab {
             padding: 6px 11px;
             font-size: 12px;
             font-weight: 600;
             line-height: 1.1;
-            border-radius: 999px;
-            white-space: nowrap;
             height: 32px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            flex: 0 0 auto;
+            white-space: nowrap;
           }
         }
 
@@ -314,9 +313,10 @@ export default function GuidePage() {
         @media (max-width: 380px) {
           .device-tabs {
             gap: 3px;
-            padding: 0 2px;
+            padding-left: 2px;
+            padding-right: 2px;
           }
-          .device-tabs .device-tab {
+          .device-tab {
             padding: 5px 9px;
             font-size: 11px;
             height: 30px;
