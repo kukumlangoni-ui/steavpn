@@ -8,7 +8,7 @@ import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 import { SITE } from "@/lib/config";
 
 const inter = localFont({
-  src: "../public/fonts/InterVariable.woff2",
+  src: "../fonts/InterVariable.woff2",
   variable: "--font-inter",
   display: "swap",
   weight: "100 900",

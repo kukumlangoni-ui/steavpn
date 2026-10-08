@@ -1,9 +1,26 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+
+function ArrowRight({ size = 16 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14" />
+      <path d="m13 5 7 7-7 7" />
+    </svg>
+  );
+}
 
 const countries = [
   { flag: '🇨🇳', name: 'China' },
@@ -16,23 +33,18 @@ const countries = [
 export default function EarthHero() {
   const [activeCountry, setActiveCountry] = useState(0);
   const [hasHydrated, setHasHydrated] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
   const active = countries[activeCountry % countries.length] ?? countries[0];
   const longActiveName = (active?.name?.length ?? 0) >= 8;
 
   useEffect(() => {
-    // Start on the first country after hydration
     setHasHydrated(true);
     setActiveCountry(0);
 
-    // Cycle every N seconds — slower for reduce-motion, never stop
     const rmQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(rmQuery.matches);
     const intervalMs = rmQuery.matches ? 6000 : 3000;
 
     let interval: ReturnType<typeof setInterval> | undefined;
 
-    // Small initial delay so the first paint is stable
     const first = window.setTimeout(() => {
       setActiveCountry((i) => (i + 1) % countries.length);
       interval = setInterval(() => {
@@ -40,22 +52,11 @@ export default function EarthHero() {
       }, intervalMs);
     }, 1500);
 
-    // eslint-disable-next-line no-console
-    console.log('[EarthHero] rotation started, interval:', intervalMs, 'reducedMotion:', rmQuery.matches);
-
     return () => {
       window.clearTimeout(first);
       if (interval) window.clearInterval(interval);
     };
-  }, [countries.length]);
-
-  // Animated globe transition props respecting prefers-reduced-motion.
-  const earthFloat = reducedMotion
-    ? {}
-    : {
-        y: [0, -10, 0],
-        scale: [1, 1.018, 1],
-      };
+  }, []);
 
   return (
     <section
@@ -76,8 +77,7 @@ export default function EarthHero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
       />
 
-      {/* Globe gradient mask: fades decorative globe AWAY from hero copy
-          so it visually bleeds into the right/bottom, never INTO text. */}
+      {/* Globe gradient mask */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 z-[5]"
@@ -95,7 +95,7 @@ export default function EarthHero() {
         className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-2 px-3 pb-3 pt-4 sm:gap-6 sm:px-6 sm:py-8 md:py-10 lg:grid-cols-[42%_14%_44%] lg:gap-4 lg:px-8 lg:py-14"
         style={{ minHeight: 'calc(100svh - 56px)' }}
       >
-        {/* Copy + primary CTA. Always the top layer. */}
+        {/* Copy + primary CTA */}
         <div className="relative z-20 mx-auto w-full max-w-[620px] text-center lg:mx-0 lg:text-left">
           <h1 className="font-extrabold tracking-normal text-white">
             <span className="block whitespace-nowrap text-[clamp(24px,7vw,36px)] leading-none sm:text-7xl sm:leading-[0.92] lg:text-[82px] xl:text-[88px]">
@@ -103,18 +103,15 @@ export default function EarthHero() {
               <span className="sm:block">built for</span>
             </span>
             <span className="relative mt-1 inline-block w-full max-w-full overflow-visible align-top sm:mt-4 md:mt-5 md:min-w-full md:justify-start h-[40px] sm:h-[56px] md:h-[72px] md:w-[560px] lg:h-[88px] lg:w-[660px] xl:h-[96px] xl:w-[720px]">
-              <motion.span
+              <span
                 key={active.name}
-                initial={hasHydrated && !reducedMotion ? { opacity: 0, y: 10 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: reducedMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-                className={`inline-flex w-full min-w-0 items-center justify-center gap-2 overflow-visible whitespace-nowrap bg-gradient-to-r from-[#ff4d2e] via-[#ff7a1a] to-[#ffc247] bg-clip-text text-[clamp(28px,8vw,46px)] font-extrabold leading-none tracking-normal text-transparent sm:text-[48px] md:w-max md:min-w-full md:justify-start md:gap-3 md:text-[60px] lg:text-[74px] xl:text-[82px] 2xl:text-[88px] ${longActiveName ? 'text-[clamp(25px,7vw,42px)] sm:text-[44px] md:text-[56px] lg:text-[68px] xl:text-[76px] 2xl:text-[82px]' : ''}`}
+                className={`country-word inline-flex w-full min-w-0 items-center justify-center gap-2 overflow-visible whitespace-nowrap bg-gradient-to-r from-[#ff4d2e] via-[#ff7a1a] to-[#ffc247] bg-clip-text text-[clamp(28px,8vw,46px)] font-extrabold leading-none tracking-normal text-transparent sm:text-[48px] md:w-max md:min-w-full md:justify-start md:gap-3 md:text-[60px] lg:text-[74px] xl:text-[82px] 2xl:text-[88px] ${longActiveName ? 'text-[clamp(25px,7vw,42px)] sm:text-[44px] md:text-[56px] lg:text-[68px] xl:text-[76px] 2xl:text-[82px]' : ''}`}
               >
                 <span className="shrink-0 text-[0.72em] text-white md:text-[0.62em]" aria-hidden>
                   {active.flag}
                 </span>
                 <span className="shrink-0">{active.name}</span>
-              </motion.span>
+              </span>
             </span>
           </h1>
 
@@ -156,37 +153,32 @@ export default function EarthHero() {
             {countries.map((location, index) => {
               const isActive = activeCountry === index;
               return (
-                <motion.div
+                <div
                   key={location.name}
-                  animate={{
-                    opacity: isActive ? 1 : 0.42,
-                    x: isActive ? 0 : -4,
-                  }}
-                  transition={{ duration: reducedMotion ? 0 : 0.35 }}
-                  className={`flex min-w-0 items-center gap-1.5 rounded-lg border-l px-2 py-1.5 text-[11px] font-semibold min-[375px]:gap-2 min-[375px]:px-2.5 min-[375px]:text-xs sm:rounded-none sm:px-3 sm:py-2 sm:text-sm ${
+                  className={`chip-transition flex min-w-0 items-center gap-1.5 rounded-lg border-l px-2 py-1.5 text-[11px] font-semibold min-[375px]:gap-2 min-[375px]:px-2.5 min-[375px]:text-xs sm:rounded-none sm:px-3 sm:py-2 sm:text-sm ${
                     isActive
-                      ? 'border-stea-primary bg-white/[0.055] text-white sm:bg-transparent'
+                      ? 'chip-active border-stea-primary bg-white/[0.055] text-white sm:bg-transparent'
                       : 'border-white/10 text-white/55'
                   }`}
                 >
                   <span className="shrink-0" aria-hidden>{location.flag}</span>
                   <span className="min-w-0 truncate lg:overflow-visible">{location.name}</span>
-                </motion.div>
+                </div>
               );
             })}
           </div>
         </div>
 
-        {/* Globe + services stack. Decorative → pointer events disabled. */}
+        {/* Globe + services stack */}
         <div className="relative z-0 mx-auto flex w-full max-w-[620px] flex-col items-center justify-center lg:max-w-none pointer-events-none select-none">
-          <motion.img
+          <img
             src="/earth-optimized.webp"
             alt="STEA VPN global access globe"
-            loading="eager"
-            fetchPriority="high"
+            loading="lazy"
+            fetchPriority="low"
             decoding="async"
             aria-hidden="true"
-            className="pointer-events-none select-none relative h-auto max-w-none
+            className="pointer-events-none select-none earth-float relative h-auto max-w-none
               order-2 sm:order-1
               mt-4 sm:mt-0
               w-[150px]
@@ -201,12 +193,6 @@ export default function EarthHero() {
               object-contain
               opacity-[0.92]
               max-[430px]:opacity-[0.88]"
-            animate={earthFloat}
-            transition={{
-              duration: 7,
-              ease: 'easeInOut',
-              repeat: Infinity,
-            }}
           />
           <img
             src="/social-optimized.webp"
@@ -223,6 +209,53 @@ export default function EarthHero() {
       </div>
 
       <style>{`
+        @keyframes countryIn {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .country-word {
+          animation: countryIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+          background-image: linear-gradient(to right, #ff4d2e, #ff7a1a, #ffc247);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+        }
+
+        @keyframes earthFloat {
+          0%   { transform: translateY(0)    scale(1); }
+          50%  { transform: translateY(-10px) scale(1.018); }
+          100% { transform: translateY(0)    scale(1); }
+        }
+        .earth-float {
+          animation: earthFloat 7s ease-in-out infinite;
+        }
+
+        /* Chip transitions — CSS only */
+        .chip-transition {
+          transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+        .chip-active {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        .chip-transition:not(.chip-active) {
+          opacity: 0.42;
+          transform: translateX(-4px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .earth-float { animation: none; }
+          .country-word { animation: none; }
+          .chip-transition { transition: none; }
+        }
+
         @media (max-width: 640px) {
           .social-icons-img {
             filter: brightness(1.18) contrast(1.06) !important;
