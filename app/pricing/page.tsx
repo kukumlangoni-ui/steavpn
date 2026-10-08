@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { PLANS, BANK, CONTACT, SITE, formatCNY } from '@/lib/config';
+import { PLANS, BANK, CONTACT, SITE, formatCNY, formatTZS, formatAED, formatUSD } from '@/lib/config';
 import CopyButton from '@/components/CopyButton';
 
 export default function PricingPage() {
@@ -177,11 +177,31 @@ export default function PricingPage() {
                   {formatCNY(plan.cny)}
                 </div>
                 <div
-                  className="muted"
-                  style={{ fontSize: '0.95rem', marginTop: '0.375rem' }}
+                  className="muted plan-currencies"
+                  style={{
+                    fontSize: '0.85rem',
+                    marginTop: '0.375rem',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    gap: '0.35rem 0.5rem',
+                    color: 'rgba(255,255,255,0.62)',
+                  }}
                 >
-                  TZS {plan.tzs.toLocaleString('en-US')}
-                  <span style={{ fontSize: '0.85rem' }}> / plan</span>
+                  <span>{formatTZS(plan.tzs)}</span>
+                  <span className="separator" style={{ opacity: 0.4 }}>·</span>
+                  <span>{formatAED(plan.aed)}</span>
+                  <span className="separator" style={{ opacity: 0.4 }}>·</span>
+                  <span>{formatUSD(plan.usd)}</span>
+                </div>
+                <div
+                  style={{
+                    fontSize: '0.7rem',
+                    color: 'rgba(255,255,255,0.4)',
+                    marginTop: '0.4rem',
+                  }}
+                >
+                  per plan · one-time payment
                 </div>
               </div>
 
@@ -657,6 +677,17 @@ export default function PricingPage() {
           #how-to-pay {
             scroll-margin-top: 24px;
             scroll-margin-bottom: 120px;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .plan-currencies {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 0.15rem !important;
+          }
+          .plan-currencies .separator {
+            display: none;
           }
         }
       `}</style>

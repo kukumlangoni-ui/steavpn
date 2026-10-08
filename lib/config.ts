@@ -32,6 +32,8 @@ export const BANK = {
 
 export const FX = {
   cnyToTzs: 400,
+  cnyToAed: 0.51,
+  cnyToUsd: 0.14,
   rateLabel: "1 CNY = 400 TZS",
 } as const;
 
@@ -43,6 +45,8 @@ export interface Plan {
   duration: string;
   cny: number;
   tzs: number;
+  aed: number;
+  usd: number;
   popular?: boolean;
   perks: string[];
 }
@@ -54,6 +58,8 @@ export const PLANS: Plan[] = [
     duration: "30 days",
     cny: 10,
     tzs: 4000,
+    aed: Math.round(10 * FX.cnyToAed * 10) / 10,
+    usd: Math.round(10 * FX.cnyToUsd * 100) / 100,
     perks: [
       "Full access for 30 days",
       "Unlimited bandwidth",
@@ -67,6 +73,8 @@ export const PLANS: Plan[] = [
     duration: "90 days",
     cny: 28,
     tzs: 11200,
+    aed: Math.round(28 * FX.cnyToAed * 10) / 10,
+    usd: Math.round(28 * FX.cnyToUsd * 100) / 100,
     popular: true,
     perks: [
       "Full access for 90 days",
@@ -82,6 +90,8 @@ export const PLANS: Plan[] = [
     duration: "365 days",
     cny: 100,
     tzs: 40000,
+    aed: Math.round(100 * FX.cnyToAed * 10) / 10,
+    usd: Math.round(100 * FX.cnyToUsd * 100) / 100,
     perks: [
       "Full access for 365 days",
       "Unlimited bandwidth",
@@ -103,6 +113,14 @@ export function formatCNY(n: number): string {
 
 export function formatTZS(n: number): string {
   return `TZS ${n.toLocaleString("en-US")}`;
+}
+
+export function formatAED(n: number): string {
+  return `AED ${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+}
+
+export function formatUSD(n: number): string {
+  return `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 }
 
 export const DEVICES = [

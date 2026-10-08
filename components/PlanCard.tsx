@@ -1,4 +1,4 @@
-import { Plan, formatCNY, formatTZS } from "@/lib/config";
+import { Plan, formatCNY, formatTZS, formatAED, formatUSD } from "@/lib/config";
 
 export default function PlanCard({
   plan,
@@ -52,9 +52,32 @@ export default function PlanCard({
         >
           {formatCNY(plan.cny)}
         </div>
-        <div className="muted" style={{ fontSize: "0.95rem", marginTop: "0.375rem" }}>
-          {formatTZS(plan.tzs)}
-          <span style={{ fontSize: "0.85rem" }}> / plan</span>
+        <div
+          className="plan-currencies"
+          style={{
+            fontSize: "0.85rem",
+            marginTop: "0.375rem",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "0.35rem 0.5rem",
+            color: "rgba(255,255,255,0.62)",
+          }}
+        >
+          <span>{formatTZS(plan.tzs)}</span>
+          <span className="separator" style={{ opacity: 0.4 }}>·</span>
+          <span>{formatAED(plan.aed)}</span>
+          <span className="separator" style={{ opacity: 0.4 }}>·</span>
+          <span>{formatUSD(plan.usd)}</span>
+        </div>
+        <div
+          style={{
+            fontSize: "0.7rem",
+            color: "rgba(255,255,255,0.4)",
+            marginTop: "0.4rem",
+          }}
+        >
+          per plan · one-time payment
         </div>
       </div>
 
@@ -110,6 +133,19 @@ export default function PlanCard({
       >
         Choose this plan
       </a>
+
+      <style>{`
+        @media (max-width: 420px) {
+          .plan-currencies {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 0.15rem !important;
+          }
+          .plan-currencies .separator {
+            display: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }
