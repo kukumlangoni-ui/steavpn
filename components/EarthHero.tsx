@@ -21,26 +21,33 @@ export default function EarthHero() {
   const longActiveName = (active?.name?.length ?? 0) >= 8;
 
   useEffect(() => {
+    // Start on the first country after hydration
     setHasHydrated(true);
     setActiveCountry(0);
 
+    // Cycle every N seconds — slower for reduce-motion, never stop
     const rmQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setReducedMotion(rmQuery.matches);
-    if (rmQuery.matches) return;
+    const intervalMs = rmQuery.matches ? 6000 : 3000;
 
-    let interval: number | undefined;
-    const firstTransition = window.setTimeout(() => {
-      setActiveCountry((index) => (index + 1) % countries.length);
-      interval = window.setInterval(() => {
-        setActiveCountry((index) => (index + 1) % countries.length);
-      }, 3000);
+    let interval: ReturnType<typeof setInterval> | undefined;
+
+    // Small initial delay so the first paint is stable
+    const first = window.setTimeout(() => {
+      setActiveCountry((i) => (i + 1) % countries.length);
+      interval = setInterval(() => {
+        setActiveCountry((i) => (i + 1) % countries.length);
+      }, intervalMs);
     }, 1500);
 
+    // eslint-disable-next-line no-console
+    console.log('[EarthHero] rotation started, interval:', intervalMs, 'reducedMotion:', rmQuery.matches);
+
     return () => {
-      window.clearTimeout(firstTransition);
+      window.clearTimeout(first);
       if (interval) window.clearInterval(interval);
     };
-  }, []);
+  }, [countries.length]);
 
   // Animated globe transition props respecting prefers-reduced-motion.
   const earthFloat = reducedMotion
