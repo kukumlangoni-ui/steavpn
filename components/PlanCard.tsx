@@ -3,10 +3,8 @@ import { Plan, formatCNY, formatTZS } from "@/lib/config";
 
 export default function PlanCard({
   plan,
-  onSelect,
 }: {
   plan: Plan;
-  onSelect?: () => void;
 }) {
   const borderStyle = plan.popular
     ? { borderColor: "var(--accent-1)", boxShadow: "0 0 0 1px var(--accent-1)" }
@@ -99,11 +97,16 @@ export default function PlanCard({
       </ul>
 
       <Link
-        href={`/pay?plan=${plan.id}`}
+        href={`/pay/?plan=${plan.id}`}
         prefetch={true}
         className={plan.popular ? "btn-primary" : "btn-secondary"}
-        onClick={onSelect}
-        style={{ width: "100%" }}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          textDecoration: "none",
+        }}
       >
         Choose this plan
       </Link>

@@ -176,7 +176,8 @@ export default function PayPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setPlanId(params.get("plan"));
+    const plan = params.get("plan") || "1month";
+    setPlanId(plan);
   }, []);
 
   useEffect(() => {
