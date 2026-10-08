@@ -97,7 +97,7 @@ export default function PlanCard({
       </ul>
 
       <Link
-        href={`/pay/?plan=${plan.id}`}
+        href={`/pay/${plan.id}/`}
         prefetch={true}
         className={plan.popular ? "btn-primary" : "btn-secondary"}
         style={{
