@@ -173,7 +173,7 @@ export default function EarthHero() {
         {/* Globe + services stack. Decorative → pointer events disabled. */}
         <div className="relative z-0 mx-auto flex w-full max-w-[620px] flex-col items-center justify-center lg:max-w-none pointer-events-none select-none">
           <motion.img
-            src="/earth-optimized.png"
+            src="/earth-optimized.webp"
             alt="STEA VPN global access globe"
             loading="eager"
             fetchPriority="high"
@@ -201,10 +201,10 @@ export default function EarthHero() {
             }}
           />
           <img
-            src="/social-optimized.png"
+            src="/social-optimized.webp"
             alt="Supported social and streaming services"
-            loading="eager"
-            fetchPriority="high"
+            loading="lazy"
+            fetchPriority="low"
             decoding="async"
             aria-hidden="true"
             className="pointer-events-none select-none mt-0 h-auto w-[min(92vw,360px)] object-contain sm:mt-3 sm:w-[520px] sm:max-w-[520px] lg:mt-4 lg:w-[560px] lg:max-w-[600px] xl:w-[600px]"

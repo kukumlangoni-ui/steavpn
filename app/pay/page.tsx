@@ -60,6 +60,10 @@ function QrImage({
     <img
       src={src}
       alt={alt}
+      loading="eager"
+      fetchPriority="high"
+      width={200}
+      height={200}
       onError={() => setError(true)}
       style={{
         width: 180,
@@ -259,8 +263,32 @@ export default function PayPage() {
     );
   }
 
-  const wechatQrUrl = settings?.wechat_qr_url ? SITE.apiBase + settings.wechat_qr_url : null;
-  const alipayQrUrl = settings?.alipay_qr_url ? SITE.apiBase + settings.alipay_qr_url : null;
+  const qrVersion = new Date().toISOString().slice(0, 10);
+  const wechatQrUrl = settings?.wechat_qr_url
+    ? `${SITE.apiBase}${settings.wechat_qr_url}?v=${qrVersion}`
+    : null;
+  const alipayQrUrl = settings?.alipay_qr_url
+    ? `${SITE.apiBase}${settings.alipay_qr_url}?v=${qrVersion}`
+    : null;
+
+  // Preload QR images as soon as settings are available
+  useEffect(() => {
+    if (loadState !== "ready") return;
+    const preloads: HTMLLinkElement[] = [];
+    [wechatQrUrl, alipayQrUrl].forEach((url) => {
+      if (!url) return;
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = url;
+      document.head.appendChild(link);
+      preloads.push(link);
+    });
+    return () => {
+      preloads.forEach((el) => el.remove());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadState, settings?.wechat_qr_url, settings?.alipay_qr_url]);
 
   const wechatId = settings?.wechat_id || '';
   const alipayId = settings?.alipay_id || '';

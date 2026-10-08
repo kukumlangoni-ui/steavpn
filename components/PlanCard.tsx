@@ -100,6 +100,7 @@ export default function PlanCard({
 
       <Link
         href={`/pay?plan=${plan.id}`}
+        prefetch={true}
         className={plan.popular ? "btn-primary" : "btn-secondary"}
         onClick={onSelect}
         style={{ width: "100%" }}

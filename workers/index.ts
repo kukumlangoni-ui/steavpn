@@ -239,7 +239,7 @@ export default {
 
       const headers = new Headers();
       headers.set('Content-Type', obj.httpMetadata?.contentType || 'image/png');
-      headers.set('Cache-Control', 'public, max-age=300');
+      headers.set('Cache-Control', 'public, max-age=86400, s-maxage=604800, immutable');
       Object.entries(cors(origin)).forEach(([k, v]) => headers.set(k, v));
       return new Response(obj.body as unknown as BodyInit, { status: 200, headers });
     }
