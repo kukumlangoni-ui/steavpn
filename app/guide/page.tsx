@@ -268,53 +268,61 @@ export default function GuidePage() {
           border-color: transparent;
           font-weight: 600;
         }
+        .label-short { display: none; }
 
         /* Mobile: tight single row, all 5 fit */
         @media (max-width: 639px) {
           .device-tabs {
+            display: flex;
             flex-wrap: nowrap;
-            justify-content: center;
             gap: 4px;
-            padding-bottom: 0;
-            margin: 1.5rem 0 2rem;
+            width: 100%;
+            max-width: 100%;
+            padding: 0 4px;
+            box-sizing: border-box;
             overflow-x: auto;
             overflow-y: hidden;
+            justify-content: center;
+            -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x proximity;
-            mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
-            -webkit-mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
-            padding-left: 4px;
-            padding-right: 4px;
-            width: 100%;
-            box-sizing: border-box;
+            margin: 1.5rem 0 2rem;
+            mask-image: none;
+            -webkit-mask-image: none;
           }
           .device-tabs::-webkit-scrollbar {
             display: none;
             width: 0;
             height: 0;
           }
-          .device-tab {
-            flex-shrink: 0;
-            white-space: nowrap;
-            scroll-snap-align: start;
-            padding: 6px 10px;
+          .device-tabs .device-tab {
+            flex: 0 0 auto;
+            padding: 6px 11px;
             font-size: 12px;
             font-weight: 600;
-            line-height: 1.2;
+            line-height: 1.1;
+            border-radius: 999px;
+            white-space: nowrap;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
           }
         }
 
-        /* Small phones (<380px): even tighter */
+        /* Small phones (< 380px): even tighter */
         @media (max-width: 380px) {
-          .device-tab {
-            padding: 5px 8px;
-            font-size: 11.5px;
-          }
           .device-tabs {
             gap: 3px;
+            padding: 0 2px;
           }
+          .device-tabs .device-tab {
+            padding: 5px 9px;
+            font-size: 11px;
+            height: 30px;
+          }
+          .label-long { display: none; }
+          .label-short { display: inline; }
         }
 
         .device-card {
@@ -472,7 +480,8 @@ export default function GuidePage() {
                   onClick={() => setActiveSlug(d.slug)}
                   className={`device-tab${isActive ? " active" : ""}`}
                 >
-                  {d.name}
+                  <span className="label-long">{d.name}</span>
+                  <span className="label-short">{d.name.includes(" / ") ? d.name.split(" / ")[0] : d.name}</span>
                 </button>
               );
             })}
