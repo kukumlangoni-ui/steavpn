@@ -13,16 +13,6 @@ const countries = [
   { flag: '🌍', name: 'Anywhere' },
 ];
 
-const SERVICES = [
-  { name: 'Netflix',     src: '/brands/netflix.svg' },
-  { name: 'Disney+',     src: '/brands/disneyplus.svg' },
-  { name: 'Prime Video', src: '/brands/primevideo.svg' },
-  { name: 'Max',         src: '/brands/max.svg' },
-  { name: 'Hulu',        src: '/brands/hulu.svg' },
-  { name: 'ChatGPT',     src: '/brands/chatgpt.svg' },
-  { name: 'TikTok',      src: '/brands/tiktok.svg' },
-];
-
 export default function EarthHero() {
   const [activeCountry, setActiveCountry] = useState(0);
   const [hasHydrated, setHasHydrated] = useState(false);
@@ -218,59 +208,27 @@ export default function EarthHero() {
               repeat: Infinity,
             }}
           />
-          {/* Service icons */}
-          <div
-            aria-label="Supported streaming and social services"
+          <img
+            src="/social-optimized.webp"
+            alt="Supported streaming and social services"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="pointer-events-none select-none order-1 sm:order-2 h-auto w-[min(80vw,280px)] object-contain sm:mt-3 sm:w-[520px] sm:max-w-[520px] lg:mt-4 lg:w-[560px] lg:max-w-[600px] xl:w-[600px] social-icons-img"
             style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0.65rem',
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: '1rem',
-              width: '100%',
-              maxWidth: 460,
+              filter: 'brightness(1.15) contrast(1.05)',
             }}
-            className="order-1 sm:order-2"
-          >
-            {SERVICES.map((s) => (
-              <div
-                key={s.name}
-                title={s.name}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 10,
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.09)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 7,
-                  boxShadow: '0 1px 0 0 rgba(255,255,255,0.05) inset',
-                  backdropFilter: 'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
-                }}
-              >
-                <img
-                  src={s.src}
-                  alt={s.name}
-                  width={26}
-                  height={26}
-                  loading="eager"
-                  fetchPriority="high"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    filter: 'brightness(1.15) contrast(1.05)',
-                  }}
-                />
-              </div>
-            ))}
-          </div>
+          />
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .social-icons-img {
+            filter: brightness(1.18) contrast(1.06) !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }
