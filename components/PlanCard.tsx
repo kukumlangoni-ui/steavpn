@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Plan, formatCNY, formatTZS } from "@/lib/config";
 
 export default function PlanCard({
@@ -96,9 +95,9 @@ export default function PlanCard({
         ))}
       </ul>
 
-      <Link
+      {/* Plain <a> tag — works even if JS fails to load */}
+      <a
         href={`/pay/${plan.id}/`}
-        prefetch={true}
         className={plan.popular ? "btn-primary" : "btn-secondary"}
         style={{
           display: "inline-flex",
@@ -106,10 +105,11 @@ export default function PlanCard({
           justifyContent: "center",
           width: "100%",
           textDecoration: "none",
+          cursor: "pointer",
         }}
       >
         Choose this plan
-      </Link>
+      </a>
     </div>
   );
 }
