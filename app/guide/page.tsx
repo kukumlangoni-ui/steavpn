@@ -269,6 +269,42 @@ export default function GuidePage() {
           font-weight: 600;
         }
 
+        /* Mobile: single-row horizontal scroll */
+        @media (max-width: 639px) {
+          .device-tabs {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity;
+            mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+            padding-left: 2px;
+            padding-right: 2px;
+          }
+          .device-tabs::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+          }
+          .device-tab {
+            flex-shrink: 0;
+            white-space: nowrap;
+            scroll-snap-align: start;
+          }
+        }
+
+        /* Larger phones: center if everything fits */
+        @media (min-width: 430px) and (max-width: 639px) {
+          .device-tabs {
+            justify-content: center;
+          }
+        }
+
         .device-card {
           display: flex;
           align-items: center;
