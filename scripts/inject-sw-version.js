@@ -6,7 +6,6 @@ const crypto = require("crypto");
 const buildId = Date.now().toString(36) + "-" + crypto.randomBytes(4).toString("hex");
 
 const swPaths = [
-  path.join(__dirname, "..", "public", "sw.js"),
   path.join(__dirname, "..", "out", "sw.js"),
 ];
 

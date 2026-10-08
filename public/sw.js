@@ -1,4 +1,4 @@
-const CACHE_VERSION = "muxiwz7v-866ea29b";
+const CACHE_VERSION = "__BUILD_ID__";
 const CACHE_NAME = `steavpn-${CACHE_VERSION}`;
 const PRECACHE = [
   "/",
@@ -40,15 +40,22 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(
         keys
           .filter((k) => k.startsWith("steavpn-") && k !== CACHE_NAME)
           .map((k) => caches.delete(k))
-      )
-    )
+      );
+      await self.clients.claim();
+
+      // Force all open tabs to reload so they get fresh HTML + new chunks
+      const clients = await self.clients.matchAll({ type: "window" });
+      clients.forEach((client) => {
+        client.postMessage({ type: "SW_UPDATED", version: CACHE_VERSION });
+      });
+    })()
   );
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
@@ -58,10 +65,12 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith("/api/")) return;
 
-  // HTML navigation: network first, fall back to cache, then offline page
+  // HTML navigation: always fetch fresh from network first.
+  // Only fall back to cache when the network truly fails (offline).
+  // This prevents serving stale HTML that references old JS chunks.
   if (req.mode === "navigate") {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: "no-store" })
         .then((res) => {
           if (isCacheableResponse(res)) {
             const copy = res.clone();
@@ -69,11 +78,11 @@ self.addEventListener("fetch", (event) => {
           }
           return res;
         })
-        .catch(() =>
-          caches.match(req).then(
+        .catch(() => {
+          return caches.match(req).then(
             (cached) => cached || caches.match("/offline.html")
-          )
-        )
+          );
+        })
     );
     return;
   }
