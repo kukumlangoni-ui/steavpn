@@ -269,22 +269,26 @@ export default function GuidePage() {
           font-weight: 600;
         }
 
-        /* Mobile: single-row horizontal scroll */
+        /* Mobile: tight single row, all 5 fit */
         @media (max-width: 639px) {
           .device-tabs {
             flex-wrap: nowrap;
+            justify-content: center;
+            gap: 4px;
+            padding-bottom: 0;
+            margin: 1.5rem 0 2rem;
             overflow-x: auto;
             overflow-y: hidden;
-            padding-bottom: 0.5rem;
-            margin-bottom: 2rem;
             scrollbar-width: none;
             -ms-overflow-style: none;
             -webkit-overflow-scrolling: touch;
             scroll-snap-type: x proximity;
             mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
             -webkit-mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
-            padding-left: 2px;
-            padding-right: 2px;
+            padding-left: 4px;
+            padding-right: 4px;
+            width: 100%;
+            box-sizing: border-box;
           }
           .device-tabs::-webkit-scrollbar {
             display: none;
@@ -295,13 +299,21 @@ export default function GuidePage() {
             flex-shrink: 0;
             white-space: nowrap;
             scroll-snap-align: start;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.2;
           }
         }
 
-        /* Larger phones: center if everything fits */
-        @media (min-width: 430px) and (max-width: 639px) {
+        /* Small phones (<380px): even tighter */
+        @media (max-width: 380px) {
+          .device-tab {
+            padding: 5px 8px;
+            font-size: 11.5px;
+          }
           .device-tabs {
-            justify-content: center;
+            gap: 3px;
           }
         }
 
