@@ -20,6 +20,7 @@ export default function PricingPage() {
 
   const paySectionRef = useRef<HTMLElement>(null);
 
+  // Fetch payment settings on mount
   useEffect(() => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
@@ -58,15 +59,21 @@ export default function PricingPage() {
     };
   }, []);
 
+  // Scroll + pulse when a plan is selected (after the section renders)
+  useEffect(() => {
+    if (selectedPlanId && paySectionRef.current) {
+      requestAnimationFrame(() => {
+        const el = paySectionRef.current;
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        el.classList.add('pulse');
+        setTimeout(() => el.classList.remove('pulse'), 1700);
+      });
+    }
+  }, [selectedPlanId]);
+
   function handleChoosePlan(planId: string) {
     setSelectedPlanId(planId);
-    const el = paySectionRef.current;
-    if (!el) return;
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(() => {
-      el.classList.add('pulse');
-      setTimeout(() => el.classList.remove('pulse'), 1700);
-    }, 400);
   }
 
   const selectedPlan = selectedPlanId
@@ -234,21 +241,36 @@ export default function PricingPage() {
         })}
       </div>
 
-      {/* How to pay section */}
-      <section
-        ref={paySectionRef}
-        id="how-to-pay"
-        style={{
-          marginTop: '5rem',
-          padding: '2.5rem',
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 20,
-          scrollMarginTop: '80px',
-        }}
-      >
-        {/* Selected plan banner */}
-        {selectedPlan && (
+      {/* Hint — visible only before a plan is selected */}
+      {!selectedPlanId && (
+        <p
+          style={{
+            marginTop: '3rem',
+            textAlign: 'center',
+            fontSize: '0.95rem',
+            color: 'var(--text-muted)',
+            lineHeight: 1.6,
+          }}
+        >
+          Select a plan above to see payment options — we accept WeChat,
+          Alipay, and Tanzanian bank transfer.
+        </p>
+      )}
+
+      {/* How to pay section — visible only after a plan is selected */}
+      {selectedPlanId && selectedPlan && (
+        <section
+          ref={paySectionRef}
+          id="how-to-pay"
+          style={{
+            marginTop: '5rem',
+            padding: '2.5rem',
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: 20,
+          }}
+        >
+          {/* Selected plan banner */}
           <div
             style={{
               marginBottom: '2rem',
@@ -290,329 +312,352 @@ export default function PricingPage() {
               Pay using any method below, then send us a screenshot.
             </div>
           </div>
-        )}
 
-        <h2
-          style={{
-            fontSize: '2rem',
-            fontWeight: 800,
-            letterSpacing: '-0.02em',
-            margin: '0 0 0.75rem',
-          }}
-        >
-          How to pay
-        </h2>
-        <p
-          style={{
-            color: 'var(--text-muted)',
-            margin: '0 0 2.5rem',
-            fontSize: '1.05rem',
-            maxWidth: 640,
-            lineHeight: 1.6,
-          }}
-        >
-          After paying, screenshot your confirmation and send it to us on
-          WeChat or WhatsApp. We&apos;ll reply with your subscription link
-          within 30 minutes.
-        </p>
-
-        {/* Payment methods grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: '1.5rem',
-          }}
-        >
-          {/* WeChat Pay */}
-          <div
+          <h2
             style={{
-              padding: '1.5rem',
-              background: 'var(--surface-2)',
-              border: '1px solid var(--border)',
-              borderRadius: 14,
-              textAlign: 'center',
+              fontSize: '2rem',
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              margin: '0 0 0.75rem',
             }}
           >
+            How to pay
+          </h2>
+          <p
+            style={{
+              color: 'var(--text-muted)',
+              margin: '0 0 2.5rem',
+              fontSize: '1.05rem',
+              maxWidth: 640,
+              lineHeight: 1.6,
+            }}
+          >
+            After paying, screenshot your confirmation and send it to us on
+            WeChat or WhatsApp. We&apos;ll reply with your subscription link
+            within 30 minutes.
+          </p>
+
+          {/* Payment methods grid */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '1.5rem',
+            }}
+          >
+            {/* WeChat Pay */}
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                marginBottom: '1rem',
+                padding: '1.5rem',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border)',
+                borderRadius: 14,
+                textAlign: 'center',
               }}
             >
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>
-                WeChat Pay
-              </h3>
-              <span
-                style={{
-                  fontSize: '0.7rem',
-                  background: 'rgba(245,158,11,0.15)',
-                  color: '#f59e0b',
-                  padding: '0.2rem 0.5rem',
-                  borderRadius: '6px',
-                  fontWeight: 700,
-                  letterSpacing: '0.05em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                Recommended
-              </span>
-            </div>
-
-            {payment?.wechat_qr_url ? (
-              <img
-                src={`${SITE.apiBase}${payment.wechat_qr_url}`}
-                alt="WeChat QR code"
-                width={220}
-                height={220}
-                loading="eager"
-                style={{
-                  display: 'block',
-                  width: 220,
-                  height: 220,
-                  maxWidth: '100%',
-                  background: '#fff',
-                  borderRadius: 12,
-                  margin: '0 auto 1rem',
-                  padding: 8,
-                }}
-              />
-            ) : (
               <div
                 style={{
-                  width: 220,
-                  height: 220,
-                  maxWidth: '100%',
-                  background: 'var(--surface)',
-                  borderRadius: 12,
-                  margin: '0 auto 1rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: 'var(--text-muted)',
-                  fontSize: '0.85rem',
+                  gap: '0.5rem',
+                  marginBottom: '1rem',
                 }}
               >
-                Loading QR…
-              </div>
-            )}
-
-            <p
-              style={{
-                margin: '0 0 0.5rem',
-                fontSize: '0.9rem',
-                color: 'var(--text-muted)',
-              }}
-            >
-              Open WeChat and scan, or add us directly:
-            </p>
-            <div
-              style={{
-                display: 'flex',
-                gap: '0.5rem',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <code style={{ fontSize: '0.95rem', fontWeight: 600 }}>
-                {payment?.wechat_id ?? CONTACT.wechat.id}
-              </code>
-              <CopyButton text={payment?.wechat_id ?? CONTACT.wechat.id} />
-            </div>
-          </div>
-
-          {/* Bank Transfer */}
-          <div
-            style={{
-              padding: '1.5rem',
-              background: 'var(--surface-2)',
-              border: '1px solid var(--border)',
-              borderRadius: 14,
-            }}
-          >
-            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', fontWeight: 700 }}>
-              Bank Transfer
-            </h3>
-            <p
-              style={{
-                margin: '0 0 1rem',
-                fontSize: '0.85rem',
-                color: 'var(--text-muted)',
-              }}
-            >
-              Tanzania — Selcom Microfinance
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
-              <div>
-                <div
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>
+                  WeChat Pay
+                </h3>
+                <span
                   style={{
-                    fontSize: '0.75rem',
+                    fontSize: '0.7rem',
+                    background: 'rgba(245,158,11,0.15)',
+                    color: '#f59e0b',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '6px',
+                    fontWeight: 700,
+                    letterSpacing: '0.05em',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    color: 'var(--text-muted)',
-                    marginBottom: '0.3rem',
                   }}
                 >
-                  Bank
-                </div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>
-                  {payment?.bank_name ?? BANK.bankName}
-                </div>
+                  Recommended
+                </span>
               </div>
 
-              <div>
-                <div
+              {payment?.wechat_qr_url ? (
+                <img
+                  src={`${SITE.apiBase}${payment.wechat_qr_url}`}
+                  alt="WeChat QR code"
+                  width={220}
+                  height={220}
+                  loading="eager"
                   style={{
-                    fontSize: '0.75rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    color: 'var(--text-muted)',
-                    marginBottom: '0.3rem',
+                    display: 'block',
+                    width: 220,
+                    height: 220,
+                    maxWidth: '100%',
+                    background: '#fff',
+                    borderRadius: 12,
+                    margin: '0 auto 1rem',
+                    padding: 8,
                   }}
-                >
-                  Account name
-                </div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>
-                  {payment?.bank_account_name ?? BANK.accountName}
-                </div>
-              </div>
-
-              <div>
+                />
+              ) : (
                 <div
                   style={{
-                    fontSize: '0.75rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                    color: 'var(--text-muted)',
-                    marginBottom: '0.3rem',
-                  }}
-                >
-                  Account number
-                </div>
-                <div
-                  style={{
+                    width: 220,
+                    height: 220,
+                    maxWidth: '100%',
+                    background: 'var(--surface)',
+                    borderRadius: 12,
+                    margin: '0 auto 1rem',
                     display: 'flex',
-                    gap: '0.5rem',
                     alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--text-muted)',
+                    fontSize: '0.85rem',
                   }}
                 >
-                  <code
-                    style={{ fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.02em' }}
+                  Loading QR…
+                </div>
+              )}
+
+              <p
+                style={{
+                  margin: '0 0 0.5rem',
+                  fontSize: '0.9rem',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                Open WeChat and scan, or add us directly:
+              </p>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.5rem',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <code style={{ fontSize: '0.95rem', fontWeight: 600 }}>
+                  {payment?.wechat_id ?? CONTACT.wechat.id}
+                </code>
+                <CopyButton text={payment?.wechat_id ?? CONTACT.wechat.id} />
+              </div>
+            </div>
+
+            {/* Bank Transfer */}
+            <div
+              style={{
+                padding: '1.5rem',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border)',
+                borderRadius: 14,
+              }}
+            >
+              <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', fontWeight: 700 }}>
+                Bank Transfer
+              </h3>
+              <p
+                style={{
+                  margin: '0 0 1rem',
+                  fontSize: '0.85rem',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                Tanzania — Selcom Microfinance
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+                <div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      color: 'var(--text-muted)',
+                      marginBottom: '0.3rem',
+                    }}
                   >
-                    {payment?.bank_account_number ?? BANK.accountNumber}
-                  </code>
-                  <CopyButton
-                    text={payment?.bank_account_number ?? BANK.accountNumber}
-                  />
+                    Bank
+                  </div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>
+                    {payment?.bank_name ?? BANK.bankName}
+                  </div>
+                </div>
+
+                <div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      color: 'var(--text-muted)',
+                      marginBottom: '0.3rem',
+                    }}
+                  >
+                    Account name
+                  </div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>
+                    {payment?.bank_account_name ?? BANK.accountName}
+                  </div>
+                </div>
+
+                <div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      color: 'var(--text-muted)',
+                      marginBottom: '0.3rem',
+                    }}
+                  >
+                    Account number
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '0.5rem',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <code
+                      style={{ fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.02em' }}
+                    >
+                      {payment?.bank_account_number ?? BANK.accountNumber}
+                    </code>
+                    <CopyButton
+                      text={payment?.bank_account_number ?? BANK.accountNumber}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Alipay */}
+            <div
+              style={{
+                padding: '1.5rem',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border)',
+                borderRadius: 14,
+                textAlign: 'center',
+              }}
+            >
+              <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+                Alipay
+              </h3>
+
+              {payment?.alipay_qr_url ? (
+                <img
+                  src={`${SITE.apiBase}${payment.alipay_qr_url}`}
+                  alt="Alipay QR code"
+                  width={220}
+                  height={220}
+                  loading="eager"
+                  style={{
+                    display: 'block',
+                    width: 220,
+                    height: 220,
+                    maxWidth: '100%',
+                    background: '#fff',
+                    borderRadius: 12,
+                    margin: '0 auto 1rem',
+                    padding: 8,
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: 220,
+                    height: 220,
+                    maxWidth: '100%',
+                    background: 'var(--surface)',
+                    borderRadius: 12,
+                    margin: '0 auto 1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--text-muted)',
+                    fontSize: '0.85rem',
+                  }}
+                >
+                  Loading QR…
+                </div>
+              )}
+
+              <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                Scan with Alipay to pay
+              </p>
+            </div>
           </div>
 
-          {/* Alipay */}
+          {/* Send screenshot CTAs */}
           <div
             style={{
-              padding: '1.5rem',
-              background: 'var(--surface-2)',
-              border: '1px solid var(--border)',
-              borderRadius: 14,
-              textAlign: 'center',
+              marginTop: '2.5rem',
+              paddingTop: '2rem',
+              borderTop: '1px solid var(--border)',
             }}
           >
-            <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 700 }}>
-              Alipay
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 1rem' }}>
+              Paid? Send us your screenshot
             </h3>
-
-            {payment?.alipay_qr_url ? (
-              <img
-                src={`${SITE.apiBase}${payment.alipay_qr_url}`}
-                alt="Alipay QR code"
-                width={220}
-                height={220}
-                loading="eager"
-                style={{
-                  display: 'block',
-                  width: 220,
-                  height: 220,
-                  maxWidth: '100%',
-                  background: '#fff',
-                  borderRadius: 12,
-                  margin: '0 auto 1rem',
-                  padding: 8,
-                }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: 220,
-                  height: 220,
-                  maxWidth: '100%',
-                  background: 'var(--surface)',
-                  borderRadius: 12,
-                  margin: '0 auto 1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--text-muted)',
-                  fontSize: '0.85rem',
-                }}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <a
+                href={CONTACT.whatsapp.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+                style={{ textDecoration: 'none' }}
               >
-                Loading QR…
-              </div>
-            )}
-
-            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-              Scan with Alipay to pay
-            </p>
+                Send on WhatsApp
+              </a>
+              <a
+                href={CONTACT.wechat.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary"
+                style={{ textDecoration: 'none' }}
+              >
+                Send on WeChat
+              </a>
+            </div>
           </div>
-        </div>
-
-        {/* Send screenshot CTAs */}
-        <div
-          style={{
-            marginTop: '2.5rem',
-            paddingTop: '2rem',
-            borderTop: '1px solid var(--border)',
-          }}
-        >
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 1rem' }}>
-            Paid? Send us your screenshot
-          </h3>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <a
-              href={CONTACT.whatsapp.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary"
-              style={{ textDecoration: 'none' }}
-            >
-              Send on WhatsApp
-            </a>
-            <a
-              href={CONTACT.wechat.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-secondary"
-              style={{ textDecoration: 'none' }}
-            >
-              Send on WeChat
-            </a>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <style>{`
+        @keyframes payReveal {
+          from {
+            opacity: 0;
+            transform: translateY(24px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        #how-to-pay {
+          animation: payReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+          scroll-margin-top: 88px;
+        }
+        #how-to-pay.pulse {
+          animation: payReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both,
+                     highlightPay 1.6s ease-out 0.5s;
+        }
+
         @keyframes highlightPay {
           0%   { box-shadow: 0 0 0 0 rgba(245,158,11,0.45); }
           50%  { box-shadow: 0 0 0 12px rgba(245,158,11,0); }
           100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
         }
-        #how-to-pay.pulse {
-          animation: highlightPay 1.6s ease-out;
+
+        @media (max-width: 640px) {
+          #how-to-pay {
+            scroll-margin-top: 24px;
+            scroll-margin-bottom: 120px;
+          }
         }
       `}</style>
     </div>
