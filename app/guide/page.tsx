@@ -183,6 +183,7 @@ export default function GuidePage() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState<string>("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -219,6 +220,31 @@ export default function GuidePage() {
     load();
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    function applyHash() {
+      const hash = window.location.hash.replace(/^#/, '');
+      const validSlugs = devices.map((d) => d.slug);
+      if (validSlugs.includes(hash)) {
+        setActiveSlug(hash);
+        setTimeout(() => {
+          const el = document.getElementById('device-' + hash);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 200);
+      }
+    }
+
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, [devices]);
+
+  function selectDevice(slug: string) {
+    setActiveSlug(slug);
+    history.replaceState(null, '', `#${slug}`);
+  }
 
   const activeDevice = devices.find((d) => d.slug === activeSlug) || null;
 
@@ -477,7 +503,7 @@ export default function GuidePage() {
               return (
                 <button
                   key={d.slug}
-                  onClick={() => setActiveSlug(d.slug)}
+                  onClick={() => selectDevice(d.slug)}
                   className={`device-tab${isActive ? " active" : ""}`}
                 >
                   <span className="label-long">{d.name}</span>
@@ -502,21 +528,43 @@ export default function GuidePage() {
       ) : activeDevice ? (
         <>
           {/* Device card */}
-          <div className="device-card">
+          <div id={`device-${activeDevice.slug}`} className="device-card">
             <DeviceIcon slug={activeDevice.slug} appName={activeDevice.app_name} />
             <div className="device-info">
               <h2 className="device-app">{activeDevice.app_name}</h2>
               <p className="device-name">{activeDevice.name}</p>
             </div>
-            <a
-              href={activeDevice.download_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary"
-              style={{ flexShrink: 0 }}
-            >
-              Download app
-            </a>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flexShrink: 0 }}>
+              <a
+                href={activeDevice.download_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+              >
+                Download app
+              </a>
+              <button
+                onClick={async () => {
+                  const url = `https://steavpn.stea.africa/guide/#${activeSlug}`;
+                  try {
+                    await navigator.clipboard.writeText(url);
+                  } catch {
+                    const ta = document.createElement('textarea');
+                    ta.value = url;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                  }
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1500);
+                }}
+                className="btn-secondary"
+                style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+              >
+                {copied ? '✓ Copied' : 'Copy link'}
+              </button>
+            </div>
           </div>
 
           {/* Copy link row */}

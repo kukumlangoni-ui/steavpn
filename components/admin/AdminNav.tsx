@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { label: 'Subscriptions', href: '/admin/subscriptions' },
   { label: 'Guide', href: '/admin/guide' },
   { label: 'Payment settings', href: '/admin/payment-settings' },
+  { label: 'Share links', href: '/admin/share-links' },
 ];
 
 export default function AdminNav() {

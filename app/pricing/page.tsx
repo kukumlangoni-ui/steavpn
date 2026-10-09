@@ -74,6 +74,28 @@ export default function PricingPage() {
     }
   }, [selectedPlanId]);
 
+  // Read ?plan= param on mount to auto-select a plan
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const planParam = params.get('plan');
+    const validPlans = ['1month', '3months', '1year'];
+
+    if (planParam && validPlans.includes(planParam)) {
+      setSelectedPlanId(planParam);
+
+      if (window.location.hash === '#how-to-pay') {
+        setTimeout(() => {
+          const el = document.getElementById('how-to-pay');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            el.classList.add('pulse');
+            setTimeout(() => el.classList.remove('pulse'), 1700);
+          }
+        }, 300);
+      }
+    }
+  }, []);
+
   function handleChoosePlan(planId: string) {
     setSelectedPlanId(planId);
   }
