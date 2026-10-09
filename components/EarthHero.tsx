@@ -22,12 +22,78 @@ function ArrowRight({ size = 16 }: { size?: number }) {
   );
 }
 
+function FlagImage({ code }: { code: string }) {
+  if (code === 'earth') {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        width="1em"
+        height="1em"
+        style={{
+          display: 'inline-block',
+          verticalAlign: '-0.1em',
+          marginRight: '0.05em',
+        }}
+        aria-hidden
+      >
+        <circle cx="12" cy="12" r="10" fill="#1e40af" />
+        <path
+          d="M4 9 Q8 7 12 9 Q16 11 20 9 M3 12 Q8 11 12 13 Q16 15 20 12 M5 16 Q9 15 12 16 Q15 17 19 15"
+          stroke="#22c55e"
+          strokeWidth="1.2"
+          fill="none"
+        />
+        <ellipse
+          cx="12"
+          cy="12"
+          rx="10"
+          ry="10"
+          fill="none"
+          stroke="rgba(0,0,0,0.2)"
+          strokeWidth="0.5"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <img
+      src={`https://flagcdn.com/w40/${code}.png`}
+      alt=""
+      width={40}
+      height={30}
+      loading="eager"
+      decoding="async"
+      onError={(e) => {
+        const img = e.currentTarget;
+        img.style.display = 'none';
+        const fallback = document.createElement('span');
+        fallback.textContent = code.toUpperCase();
+        fallback.style.fontSize = '0.72em';
+        fallback.style.color = 'rgba(255,255,255,0.6)';
+        if (img.parentElement) img.parentElement.appendChild(fallback);
+      }}
+      style={{
+        display: 'inline-block',
+        verticalAlign: '-0.1em',
+        width: '1em',
+        height: 'auto',
+        aspectRatio: '4 / 3',
+        objectFit: 'cover',
+        borderRadius: '0.08em',
+        boxShadow: '0 0 0 1px rgba(255,255,255,0.1)',
+        marginRight: '0.05em',
+      }}
+    />
+  );
+}
+
 const countries = [
-  { flag: '🇨🇳', name: 'China' },
-  { flag: '🇦🇪', name: 'Dubai' },
-  { flag: '🇯🇵', name: 'Japan' },
-  { flag: '🇪🇺', name: 'Europe' },
-  { flag: '🌍', name: 'Anywhere' },
+  { code: 'cn', name: 'China' },
+  { code: 'ae', name: 'Dubai' },
+  { code: 'jp', name: 'Japan' },
+  { code: 'eu', name: 'Europe' },
+  { code: 'earth', name: 'Anywhere' },
 ];
 
 export default function EarthHero() {
@@ -108,7 +174,7 @@ export default function EarthHero() {
                 className={`country-word inline-flex w-full min-w-0 items-center justify-center gap-2 overflow-visible whitespace-nowrap bg-gradient-to-r from-[#ff4d2e] via-[#ff7a1a] to-[#ffc247] bg-clip-text text-[clamp(28px,8vw,46px)] font-extrabold leading-none tracking-normal text-transparent sm:text-[48px] md:w-max md:min-w-full md:justify-start md:gap-3 md:text-[60px] lg:text-[74px] xl:text-[82px] 2xl:text-[88px] ${longActiveName ? 'text-[clamp(25px,7vw,42px)] sm:text-[44px] md:text-[56px] lg:text-[68px] xl:text-[76px] 2xl:text-[82px]' : ''}`}
               >
                 <span className="shrink-0 text-[0.72em] text-white md:text-[0.62em]" aria-hidden>
-                  {active.flag}
+                  <FlagImage code={active.code} />
                 </span>
                 <span className="shrink-0">{active.name}</span>
               </span>
@@ -161,7 +227,7 @@ export default function EarthHero() {
                       : 'border-white/10 text-white/55'
                   }`}
                 >
-                  <span className="shrink-0" aria-hidden>{location.flag}</span>
+                  <span className="shrink-0" aria-hidden><FlagImage code={location.code} /></span>
                   <span className="min-w-0 truncate lg:overflow-visible">{location.name}</span>
                 </div>
               );
