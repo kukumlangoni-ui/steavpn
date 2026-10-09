@@ -123,6 +123,45 @@ export function formatUSD(n: number): string {
   return `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 }
 
+export type CurrencyCode = "cny" | "usd" | "aed" | "tzs";
+
+export const CURRENCIES: Array<{
+  code: CurrencyCode;
+  label: string;
+  symbol: string;
+}> = [
+  { code: "cny", label: "CNY", symbol: "¥" },
+  { code: "usd", label: "USD", symbol: "$" },
+  { code: "aed", label: "AED", symbol: "AED" },
+  { code: "tzs", label: "TZS", symbol: "TZS" },
+];
+
+export function formatPrice(amount: number, currency: CurrencyCode): string {
+  switch (currency) {
+    case "cny":
+      return `¥${amount}`;
+    case "usd":
+      return `$${amount.toFixed(2)}`;
+    case "aed":
+      return `AED ${amount.toFixed(1)}`;
+    case "tzs":
+      return `TZS ${amount.toLocaleString("en-US")}`;
+  }
+}
+
+export function getPlanPrice(plan: Plan, currency: CurrencyCode): number {
+  switch (currency) {
+    case "cny":
+      return plan.cny;
+    case "usd":
+      return plan.usd;
+    case "aed":
+      return plan.aed;
+    case "tzs":
+      return plan.tzs;
+  }
+}
+
 export const DEVICES = [
   {
     id: "ios",

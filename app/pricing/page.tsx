@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { PLANS, BANK, CONTACT, SITE, formatCNY, formatTZS, formatAED, formatUSD } from '@/lib/config';
+import { PLANS, BANK, CONTACT, SITE, CurrencyCode, CURRENCIES, formatPrice, getPlanPrice } from '@/lib/config';
 import CopyButton from '@/components/CopyButton';
+import CurrencyToggle from '@/components/CurrencyToggle';
 
 export default function PricingPage() {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [currency, setCurrency] = useState<CurrencyCode>('cny');
   const [payment, setPayment] = useState<{
     wechat_id: string;
     whatsapp: string;
@@ -110,6 +112,9 @@ export default function PricingPage() {
         </p>
       </div>
 
+      {/* Currency toggle */}
+      <CurrencyToggle value={currency} onChange={setCurrency} />
+
       {/* Plan cards */}
       <div
         style={{
@@ -174,7 +179,7 @@ export default function PricingPage() {
                     lineHeight: 1,
                   }}
                 >
-                  {formatCNY(plan.cny)}
+                  {formatPrice(getPlanPrice(plan, currency), currency)}
                 </div>
                 <div
                   className="muted plan-currencies"
@@ -188,11 +193,14 @@ export default function PricingPage() {
                     color: 'rgba(255,255,255,0.62)',
                   }}
                 >
-                  <span>{formatTZS(plan.tzs)}</span>
-                  <span className="separator" style={{ opacity: 0.4 }}>·</span>
-                  <span>{formatAED(plan.aed)}</span>
-                  <span className="separator" style={{ opacity: 0.4 }}>·</span>
-                  <span>{formatUSD(plan.usd)}</span>
+                  {CURRENCIES
+                    .filter((c) => c.code !== currency)
+                    .map((c, i, arr) => (
+                      <span key={c.code} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span>{formatPrice(getPlanPrice(plan, c.code), c.code)}</span>
+                        {i < arr.length - 1 && <span className="separator" style={{ opacity: 0.4 }}>·</span>}
+                      </span>
+                    ))}
                 </div>
                 <div
                   style={{
@@ -329,7 +337,7 @@ export default function PricingPage() {
                     color: 'rgba(255,255,255,0.85)',
                   }}
                 >
-                  {formatCNY(selectedPlan.cny)} · {selectedPlan.duration}
+                  {formatPrice(getPlanPrice(selectedPlan, currency), currency)} · {selectedPlan.duration}
                 </div>
                 <div
                   style={{
@@ -341,11 +349,14 @@ export default function PricingPage() {
                     marginTop: '0.15rem',
                   }}
                 >
-                  <span>{formatTZS(selectedPlan.tzs)}</span>
-                  <span style={{ opacity: 0.4 }}>·</span>
-                  <span>{formatAED(selectedPlan.aed)}</span>
-                  <span style={{ opacity: 0.4 }}>·</span>
-                  <span>{formatUSD(selectedPlan.usd)}</span>
+                  {CURRENCIES
+                    .filter((c) => c.code !== currency)
+                    .map((c, i, arr) => (
+                      <span key={c.code} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span>{formatPrice(getPlanPrice(selectedPlan, c.code), c.code)}</span>
+                        {i < arr.length - 1 && <span style={{ opacity: 0.4 }}>·</span>}
+                      </span>
+                    ))}
                 </div>
               </div>
             </div>
