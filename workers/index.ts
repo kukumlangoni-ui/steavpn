@@ -169,9 +169,10 @@ export default {
         `${COOKIE_NAME}=${token}`,
         'HttpOnly',
         'Secure',
-        'SameSite=Lax',
+        'SameSite=None',
         'Path=/',
         `Max-Age=${SESSION_TTL_SECONDS}`,
+        'Domain=.stea.africa',
       ].join('; ');
 
       return json({ ok: true, email: row.email }, 200, {
@@ -186,7 +187,7 @@ export default {
       if (token) await env.SESSIONS.delete(`session:${token}`);
       return json({ ok: true }, 200, {
         ...cors(origin),
-        'Set-Cookie': `${COOKIE_NAME}=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0`,
+        'Set-Cookie': `${COOKIE_NAME}=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0; Domain=.stea.africa`,
       });
     }
 
