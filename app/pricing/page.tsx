@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { PLANS, BANK, CONTACT, SITE, CurrencyCode, CURRENCIES, formatPrice, getPlanPrice } from '@/lib/config';
+import { PLANS, BANK, CONTACT, SITE, CurrencyCode, formatPrice, getPlanPrice } from '@/lib/config';
 import CopyButton from '@/components/CopyButton';
 import CurrencyToggle from '@/components/CurrencyToggle';
 
@@ -182,27 +182,6 @@ export default function PricingPage() {
                   {formatPrice(getPlanPrice(plan, currency), currency)}
                 </div>
                 <div
-                  className="muted plan-currencies"
-                  style={{
-                    fontSize: '0.85rem',
-                    marginTop: '0.375rem',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    alignItems: 'center',
-                    gap: '0.35rem 0.5rem',
-                    color: 'rgba(255,255,255,0.62)',
-                  }}
-                >
-                  {CURRENCIES
-                    .filter((c) => c.code !== currency)
-                    .map((c, i, arr) => (
-                      <span key={c.code} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span>{formatPrice(getPlanPrice(plan, c.code), c.code)}</span>
-                        {i < arr.length - 1 && <span className="separator" style={{ opacity: 0.4 }}>·</span>}
-                      </span>
-                    ))}
-                </div>
-                <div
                   style={{
                     fontSize: '0.7rem',
                     color: 'rgba(255,255,255,0.4)',
@@ -338,25 +317,6 @@ export default function PricingPage() {
                   }}
                 >
                   {formatPrice(getPlanPrice(selectedPlan, currency), currency)} · {selectedPlan.duration}
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.85rem',
-                    color: 'rgba(255,255,255,0.6)',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '0.35rem 0.5rem',
-                    marginTop: '0.15rem',
-                  }}
-                >
-                  {CURRENCIES
-                    .filter((c) => c.code !== currency)
-                    .map((c, i, arr) => (
-                      <span key={c.code} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span>{formatPrice(getPlanPrice(selectedPlan, c.code), c.code)}</span>
-                        {i < arr.length - 1 && <span style={{ opacity: 0.4 }}>·</span>}
-                      </span>
-                    ))}
                 </div>
               </div>
             </div>
@@ -714,17 +674,6 @@ export default function PricingPage() {
           #how-to-pay {
             scroll-margin-top: 24px;
             scroll-margin-bottom: 120px;
-          }
-        }
-
-        @media (max-width: 420px) {
-          .plan-currencies {
-            flex-direction: column;
-            align-items: flex-start !important;
-            gap: 0.15rem !important;
-          }
-          .plan-currencies .separator {
-            display: none;
           }
         }
       `}</style>
